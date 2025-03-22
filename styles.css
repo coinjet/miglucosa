@@ -125,3 +125,25 @@ th {
 .botones-adicionales button:active {
   transform: scale(0.98);
 }
+
+/* Estilo para la sección de gráficas */
+#grafica {
+  margin-top: 30px;
+}
+
+#grafica h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#grafica select {
+  padding: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+canvas {
+  max-width: 100%;
+  height: auto;
+}
