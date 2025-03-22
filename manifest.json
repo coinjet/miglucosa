@@ -1,10 +1,10 @@
 {
   "name": "Registro de Glucosa",
   "short_name": "GlucosaApp",
-  "start_url": "/",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#4CAF50",
+  "theme_color": "#62A5ED",
   "icons": [
     {
       "src": "assets/icon-192x192.png",
