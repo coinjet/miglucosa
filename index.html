@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Glucosa</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <header>
+    <h1>Registro de Glucosa</h1>
+  </header>
+  <main>
+    <section id="registro">
+      <input type="number" id="glucosa" placeholder="Ingrese su nivel de glucosa" required>
+      <button id="guardar">Guardar</button>
+    </section>
+    <section id="resultados">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha y Hora</th>
+            <th>Resultado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-resultados">
+        </tbody>
+      </table>
+      <p id="promedio-hba1c">Promedio HbA1C: --%</p>
+    </section>
+    <footer>
+      <button id="resetear">Resetear Datos</button>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
