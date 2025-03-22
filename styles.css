@@ -1,71 +1,135 @@
+/* styles.css */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f9f9f9;
+  color: #333;
+}
+
+.container {
+  max-width: 800px; /* Ancho máximo del contenedor */
+  margin: 0 auto; /* Centrar el contenido */
+  padding: 20px;
+  border: 1px solid #ccc; /* Borde delgado */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  background-color: white;
 }
 
 header {
-  background-color: #4CAF50;
-  color: white;
   text-align: center;
-  padding: 1rem;
+  padding: 20px;
+  background-color: #62A5ED; /* Azul claro */
+  color: white;
 }
 
 main {
-  padding: 1rem;
+  padding: 20px;
 }
 
-#registro {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+#registro label {
+  display: block;
+  margin-bottom: 10px;
 }
 
-#registro input {
-  flex: 1;
-  padding: 0.5rem;
-  font-size: 1rem;
+#registro input[type="text"],
+#registro input[type="number"] {
+  width: calc(100% - 22px); /* Ajuste para evitar desbordamiento */
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
 #registro button {
-  padding: 0.5rem 1rem;
-  background-color: #4CAF50;
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(to bottom, #62A5ED, #4B8DDF); /* Degradado azul */
   color: white;
   border: none;
+  border-radius: 8px; /* Bordes redondeados */
   cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Efecto de clic */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#registro button:hover {
+  background: linear-gradient(to bottom, #4B8DDF, #3A73B9); /* Degradado más oscuro */
+}
+
+#registro button:active {
+  transform: scale(0.98); /* Efecto de clic */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
 }
 
 th, td {
-  border: 1px solid #ddd;
-  padding: 0.5rem;
+  padding: 12px;
   text-align: left;
+  border: 1px solid #ddd;
 }
 
 th {
-  background-color: #4CAF50;
+  background-color: #f2f2f2;
+}
+
+.botones-adicionales {
+  margin-top: 20px;
+}
+
+.botones-adicionales button {
+  padding: 10px 20px;
+  margin-right: 10px;
+  background: linear-gradient(to bottom, #62A5ED, #4B8DDF); /* Degradado azul */
   color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.botones-adicionales button:hover {
+  background: linear-gradient(to bottom, #4B8DDF, #3A73B9);
+}
+
+.botones-adicionales button:active {
+  transform: scale(0.98);
 }
 
 #promedio-hba1c {
-  margin-top: 1rem;
   font-weight: bold;
-}
-
-footer {
-  margin-top: 1rem;
+  margin-top: 20px;
   text-align: center;
+  font-size: 18px;
 }
 
-footer button {
-  padding: 0.5rem 1rem;
-  background-color: #f44336;
-  color: white;
+/* Estilo para botones Editar y Eliminar */
+table tbody tr td button {
+  padding: 5px 10px;
+  margin: 0 5px;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
+}
+
+table tbody tr td button.editar {
+  background: linear-gradient(to bottom, #62A5ED, #4B8DDF);
+  color: white;
+}
+
+table tbody tr td button.eliminar {
+  background: linear-gradient(to bottom, #f44336, #d32f2f);
+  color: white;
+}
+
+table tbody tr td button:hover {
+  opacity: 0.9;
 }
