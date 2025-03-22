@@ -16,12 +16,24 @@ body {
   background-color: white;
 }
 
+/* Estilo del encabezado */
 header {
   text-align: center;
-  padding: 20px;
+  padding: 15px 0; /* Reducir altura de la barra azul */
   background-color: #62A5ED; /* Azul claro */
   color: white;
-  margin-bottom: 40px; /* Espacio adicional debajo del banner */
+  margin-bottom: 30px; /* Espacio debajo del encabezado */
+}
+
+header h1 {
+  font-size: 24px; /* Tamaño del título principal */
+  font-weight: bold; /* Negrita para el título */
+  margin: 0; /* Eliminar margen adicional */
+}
+
+header p {
+  font-size: 14px; /* Tamaño del subtítulo */
+  margin: 5px 0 0; /* Espaciado entre el título y el subtítulo */
 }
 
 #registro label {
@@ -121,6 +133,15 @@ th {
 
 .botones-adicionales button:active {
   transform: scale(0.98);
+}
+
+/* Estilo específico para el botón "Eliminar Registros" */
+.botones-adicionales button#resetear {
+  background: linear-gradient(to bottom, #FFB41B, #E69A00); /* Degradado naranja */
+}
+
+.botones-adicionales button#resetear:hover {
+  background: linear-gradient(to bottom, #E69A00, #CC8500);
 }
 
 /* Estilos para la sección de gráficas */
