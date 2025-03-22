@@ -138,30 +138,21 @@ th {
 /* Estilo específico para el botón "Eliminar Registros" */
 .botones-adicionales button#resetear {
   background: linear-gradient(to bottom, #FFB41B, #E69A00); /* Degradado naranja */
+  white-space: pre-line; /* Para dividir el texto en dos líneas */
 }
 
 .botones-adicionales button#resetear:hover {
   background: linear-gradient(to bottom, #E69A00, #CC8500);
 }
 
-/* Estilos para la sección de gráficas */
-#grafica {
-  margin-top: 30px;
-}
+/* Ajustes para espaciado en dispositivos móviles */
+@media (max-width: 600px) {
+  #registro label {
+    margin-bottom: 15px; /* Aumentar espacio entre etiquetas y campos */
+  }
 
-#grafica h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-#grafica select {
-  padding: 8px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-canvas {
-  max-width: 100%;
-  height: auto;
+  #registro input[type="text"],
+  #registro input[type="number"] {
+    margin-bottom: 25px; /* Aumentar espacio entre campos */
+  }
 }
