@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const tablaResultados = document.getElementById("tabla-resultados");
   const promedioHbA1c = document.getElementById("promedio-hba1c");
   const resetearBtn = document.getElementById("resetear");
+  const exportarDatosBtn = document.getElementById("exportar-datos");
+  const importarDatosBtn = document.getElementById("importar-datos");
+  const archivoImportarInput = document.getElementById("archivo-importar");
 
   let registros = JSON.parse(localStorage.getItem("registros")) || [];
 
@@ -48,31 +51,73 @@ document.addEventListener("DOMContentLoaded", () => {
     const fechaHora = fechaHoraInput.value;
     const resultado = parseFloat(glucosaInput.value);
 
-    // Validar campos
     if (!fechaHora || !resultado || isNaN(resultado)) {
       alert("Por favor, ingresa una fecha/hora válida y un nivel de glucosa.");
       return;
     }
 
-    // Convertir la fecha a formato ISO
     const fechaISO = new Date(fechaHora).toISOString();
 
-    // Crear un nuevo registro
     const nuevoRegistro = {
       fecha: fechaISO,
       resultado: resultado,
     };
 
-    // Guardar el registro
     registros.push(nuevoRegistro);
     localStorage.setItem("registros", JSON.stringify(registros));
 
-    // Limpiar campos
     fechaHoraInput.value = "";
     glucosaInput.value = "";
 
-    // Actualizar la tabla
     actualizarTabla();
+  });
+
+  exportarDatosBtn.addEventListener("click", () => {
+    const datosExportar = JSON.stringify(registros);
+    const blob = new Blob([datosExportar], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "registros-glucosa.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  });
+
+  importarDatosBtn.addEventListener("click", () => {
+    archivoImportarInput.click(); // Abrir el selector de archivos
+  });
+
+  archivoImportarInput.addEventListener("change", (event) => {
+    const archivo = event.target.files[0];
+
+    if (!archivo) {
+      alert("No se seleccionó ningún archivo.");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      try {
+        const datosImportados = JSON.parse(e.target.result);
+
+        // Validar que los datos importados tengan el formato correcto
+        if (!Array.isArray(datosImportados)) {
+          throw new Error("El archivo no tiene el formato correcto.");
+        }
+
+        registros = datosImportados;
+        localStorage.setItem("registros", JSON.stringify(registros));
+        actualizarTabla();
+        alert("Datos importados correctamente.");
+      } catch (error) {
+        alert(`Error al importar los datos: ${error.message}`);
+      }
+    };
+
+    reader.readAsText(archivo);
   });
 
   window.editarRegistro = (index) => {
@@ -80,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const nuevoValor = prompt("Ingrese el nuevo valor de glucosa:");
 
     if (nuevaFechaHora && nuevoValor !== null && !isNaN(nuevoValor)) {
-      // Convertir la nueva fecha a formato ISO
       const nuevaFechaISO = new Date(nuevaFechaHora).toISOString();
 
       registros[index].fecha = nuevaFechaISO;
