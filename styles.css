@@ -24,13 +24,10 @@ header {
   margin-bottom: 40px; /* Espacio adicional debajo del banner */
 }
 
-main {
-  padding: 20px;
-}
-
 #registro label {
   display: block;
   margin-bottom: 10px;
+  font-weight: bold; /* Aplicar negrita a las etiquetas */
 }
 
 #registro input[type="text"],
@@ -126,7 +123,7 @@ th {
   transform: scale(0.98);
 }
 
-/* Estilo para la sección de gráficas */
+/* Estilos para la sección de gráficas */
 #grafica {
   margin-top: 30px;
 }
