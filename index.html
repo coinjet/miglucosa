@@ -6,6 +6,7 @@
   <title>Registro de Glucosa</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icon-512x512.png" type="image/png">
   <!-- Estilo de Flatpickr -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
@@ -42,16 +43,19 @@
     </section>
 
     <!-- Promedio HbA1C -->
-    <p id="promedio-hba1c">Tu HbA1c estimado es: --%</p>
+    <div id="promedio-hba1c-container">
+      <p id="promedio-hba1c">Tu HbA1c estimado es: --%</p>
+    </div>
 
     <!-- Botones Adicionales -->
     <div class="botones-adicionales">
       <button id="exportar-datos">Exportar Datos</button>
-      <label for="importar-datos">Importar Datos:</label>
-      <input type="file" id="importar-datos">
-      <span id="archivo-seleccionado">Sin archivos seleccionados</span>
+      <button id="importar-datos">Importar Datos</button>
       <button id="resetear">Resetear Todos los Registros</button>
     </div>
+
+    <!-- Campo oculto para la selección de archivos -->
+    <input type="file" id="archivo-importar" style="display: none;" accept=".json">
   </div>
 
   <!-- Scripts -->
