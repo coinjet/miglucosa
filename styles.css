@@ -21,6 +21,7 @@ header {
   padding: 20px;
   background-color: #62A5ED; /* Azul claro */
   color: white;
+  margin-bottom: 40px; /* Espacio adicional debajo del banner */
 }
 
 main {
@@ -80,18 +81,39 @@ th {
   background-color: #f2f2f2;
 }
 
+/* Estilo para el recuadro del HbA1C */
+#promedio-hba1c-container {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+}
+
+#promedio-hba1c {
+  font-weight: bold;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Botones adicionales */
 .botones-adicionales {
-  margin-top: 20px;
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between; /* Espaciado entre botones */
 }
 
 .botones-adicionales button {
-  padding: 10px 20px;
-  margin-right: 10px;
+  flex: 1; /* Igual ancho para todos los botones */
+  margin: 0 10px; /* Espaciado entre botones */
+  padding: 12px;
   background: linear-gradient(to bottom, #62A5ED, #4B8DDF); /* Degradado azul */
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  font-size: 16px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -102,34 +124,4 @@ th {
 
 .botones-adicionales button:active {
   transform: scale(0.98);
-}
-
-#promedio-hba1c {
-  font-weight: bold;
-  margin-top: 20px;
-  text-align: center;
-  font-size: 18px;
-}
-
-/* Estilo para botones Editar y Eliminar */
-table tbody tr td button {
-  padding: 5px 10px;
-  margin: 0 5px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-table tbody tr td button.editar {
-  background: linear-gradient(to bottom, #62A5ED, #4B8DDF);
-  color: white;
-}
-
-table tbody tr td button.eliminar {
-  background: linear-gradient(to bottom, #f44336, #d32f2f);
-  color: white;
-}
-
-table tbody tr td button:hover {
-  opacity: 0.9;
 }
