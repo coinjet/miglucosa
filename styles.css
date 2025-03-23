@@ -1,94 +1,157 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // Inicializar Flatpickr
-  flatpickr("#fecha-hora", {
-    enableTime: true,
-    dateFormat: "Y-m-d h:i K",
-    time_24hr: false,
-    minuteIncrement: 5,
-  });
+/* styles.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;
+}
 
-  const fechaHoraInput = document.getElementById("fecha-hora");
-  const glucosaInput = document.getElementById("glucosa");
-  const guardarBtn = document.getElementById("guardar");
-  const tablaResultados = document.getElementById("tabla-resultados");
-  const promedioHbA1c = document.getElementById("promedio-hba1c");
-  const resetearBtn = document.getElementById("resetear");
-  const exportarDatosBtn = document.getElementById("exportar-datos");
-  const importarDatosBtn = document.getElementById("importar-datos");
-  const archivoImportarInput = document.getElementById("archivo-importar");
-  const mesSeleccionado = document.getElementById("mes-seleccionado");
-  const graficaGlucosa = document.getElementById("grafica-glucosa").getContext("2d");
+.container {
+  max-width: 800px; /* Ancho máximo del contenedor */
+  margin: 0 auto; /* Centrar el contenido */
+  padding: 20px;
+  border: 1px solid #ccc; /* Borde delgado */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  background-color: white;
+}
 
-  let registros = JSON.parse(localStorage.getItem("registros")) || [];
-  let chartInstance = null;
+header {
+  text-align: center;
+  padding: 15px 0; /* Reducir altura de la barra azul */
+  background-color: #62A5ED; /* Azul claro */
+  color: white;
+  margin-bottom: 30px; /* Espacio debajo del encabezado */
+}
 
-  // Modal de confirmación
-  const modalConfirmacion = document.getElementById("modal-confirmacion");
-  const confirmarGuardar = document.getElementById("confirmar-guardar");
-  const cancelarGuardar = document.getElementById("cancelar-guardar");
+header h1 {
+  font-size: 24px; /* Tamaño del título principal */
+  font-weight: bold; /* Negrita para el título */
+  margin: 0; /* Eliminar margen adicional */
+}
 
-  function mostrarModal() {
-    modalConfirmacion.style.display = "block";
+header p {
+  font-size: 14px; /* Tamaño del subtítulo */
+  margin: 5px 0 0; /* Espaciado entre el título y el subtítulo */
+}
+
+#registro label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold; /* Aplicar negrita a las etiquetas */
+}
+
+#registro input[type="text"],
+#registro input[type="number"] {
+  width: calc(100% - 22px); /* Ajuste para evitar desbordamiento */
+  padding: 12px;
+  margin-bottom: 20px; /* Espaciado entre campos */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+#registro button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(to bottom, #62A5ED, #4B8DDF); /* Degradado azul */
+  color: white;
+  border: none;
+  border-radius: 8px; /* Bordes redondeados */
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Efecto de clic */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#registro button:hover {
+  background: linear-gradient(to bottom, #4B8DDF, #3A73B9); /* Degradado más oscuro */
+}
+
+#registro button:active {
+  transform: scale(0.98); /* Efecto de clic */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+/* Estilo para el recuadro del HbA1C */
+#promedio-hba1c-container {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+}
+
+#promedio-hba1c {
+  font-weight: bold;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Botones adicionales */
+.botones-adicionales {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between; /* Espaciado entre botones */
+}
+
+.botones-adicionales button {
+  flex: 1; /* Igual ancho para todos los botones */
+  margin: 0 10px; /* Espaciado entre botones */
+  padding: 12px;
+  background: linear-gradient(to bottom, #62A5ED, #4B8DDF); /* Degradado azul */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.botones-adicionales button:hover {
+  background: linear-gradient(to bottom, #4B8DDF, #3A73B9);
+}
+
+.botones-adicionales button:active {
+  transform: scale(0.98);
+}
+
+/* Estilo específico para el botón "Eliminar Registros" */
+.botones-adicionales button#resetear {
+  background: linear-gradient(to bottom, #FFB41B, #E69A00); /* Degradado naranja */
+  white-space: pre-line; /* Para dividir el texto en dos líneas */
+}
+
+.botones-adicionales button#resetear:hover {
+  background: linear-gradient(to bottom, #E69A00, #CC8500);
+}
+
+/* Ajustes para espaciado en dispositivos móviles */
+@media (max-width: 600px) {
+  #registro label {
+    margin-bottom: 15px; /* Aumentar espacio entre etiquetas y campos */
   }
 
-  function ocultarModal() {
-    modalConfirmacion.style.display = "none";
+  #registro input[type="text"],
+  #registro input[type="number"] {
+    margin-bottom: 30px; /* Aumentar espacio entre campos */
   }
-
-  function actualizarTabla() {
-    tablaResultados.innerHTML = "";
-    registros.forEach((registro, index) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${new Date(registro.fecha).toLocaleString("es-ES", { hour12: true })}</td>
-        <td>${registro.resultado} mg/dL</td>
-        <td>
-          <button class="editar" onclick="editarRegistro(${index})">Editar</button>
-          <button class="eliminar" onclick="eliminarRegistro(${index})">Eliminar</button>
-        </td>
-      `;
-      tablaResultados.appendChild(row);
-    });
-    calcularPromedioHbA1c();
-    actualizarGrafica();
-  }
-
-  guardarBtn.addEventListener("click", () => {
-    const fechaHora = fechaHoraInput.value;
-    const resultado = parseFloat(glucosaInput.value);
-
-    if (!fechaHora || !resultado || isNaN(resultado)) {
-      alert("Por favor, ingresa una fecha/hora válida y un nivel de glucosa.");
-      return;
-    }
-
-    mostrarModal(); // Mostrar el modal de confirmación
-  });
-
-  confirmarGuardar.addEventListener("click", () => {
-    const fechaHora = fechaHoraInput.value;
-    const resultado = parseFloat(glucosaInput.value);
-
-    const fechaISO = new Date(fechaHora).toISOString();
-
-    const nuevoRegistro = {
-      fecha: fechaISO,
-      resultado: resultado,
-    };
-
-    registros.push(nuevoRegistro);
-    localStorage.setItem("registros", JSON.stringify(registros));
-
-    fechaHoraInput.value = "";
-    glucosaInput.value = "";
-
-    actualizarTabla();
-    ocultarModal(); // Ocultar el modal después de guardar
-  });
-
-  cancelarGuardar.addEventListener("click", () => {
-    ocultarModal(); // Ocultar el modal si se cancela
-  });
-
-  // Resto del código sin cambios...
-});
+}
