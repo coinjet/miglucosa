@@ -234,9 +234,9 @@ document.addEventListener("DOMContentLoaded", () => {
   modoNocturnoBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
     if (document.body.classList.contains("dark-mode")) {
-      modoNocturnoBtn.style.backgroundImage = "url('https://img.icons8.com/ios-filled/50/FFFFFF/moon-symbol.png')";
+      modoNocturnoBtn.textContent = "Modo Noche";
     } else {
-      modoNocturnoBtn.style.backgroundImage = "url('https://img.icons8.com/ios-filled/50/FFFFFF/sun--v1.png')";
+      modoNocturnoBtn.textContent = "Modo Día";
     }
   });
 
@@ -284,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const horaActual = `${agregarCero(ahora.getHours())}:${agregarCero(ahora.getMinutes())}`;
     if (recordatorios.includes(horaActual)) {
       alert(`¡Es hora de medir tu glucosa! (${horaActual})`);
-      const audio = new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3");
+      const audio = new Audio("assets/alarm.mp3"); // Asegúrate de tener el archivo de audio
       audio.play(); // Reproducir alarma sonora
     }
   }, 60000);
