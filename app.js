@@ -33,20 +33,12 @@ document.addEventListener("DOMContentLoaded", () => {
       row.innerHTML = `
         <td>${new Date(registro.fecha).toLocaleString("es-ES", { hour12: true })}</td>
         <td>${registro.resultado} mg/dL</td>
+        <td>${registro.notas || "--"}</td>
         <td>
           <button class="editar" onclick="editarRegistro(${index})">Editar</button>
           <button class="eliminar" onclick="eliminarRegistro(${index})">Eliminar</button>
         </td>
       `;
-
-      // Agregar nota debajo de la fila
-      if (registro.notas) {
-        const nota = document.createElement("div");
-        nota.className = "nota";
-        nota.textContent = `Nota: ${registro.notas}`;
-        row.appendChild(nota);
-      }
-
       tablaResultados.appendChild(row);
     });
     calcularPromedioHbA1c();
@@ -157,8 +149,103 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  exportarDatosBtn.addEventListener("click", () => {
+    const doc = new jsPDF();
+    doc.text("Registros de Glucosa", 10, 10);
+
+    registros.forEach((r, index) => {
+      const y = 20 + index * 10;
+      doc.text(
+        `${new Date(r.fecha).toLocaleString()} - ${r.resultado} mg/dL${
+          r.notas ? ` (${r.notas})` : ""
+        }`,
+        10,
+        y
+      );
+    });
+
+    doc.save("registros-glucosa.pdf");
+  });
+
+  importarDatosBtn.addEventListener("click", () => {
+    archivoImportarInput.click();
+  });
+
+  archivoImportarInput.addEventListener("change", (event) => {
+    const archivo = event.target.files[0];
+
+    if (!archivo) {
+      alert("No se seleccionó ningún archivo.");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      try {
+        const datosImportados = JSON.parse(e.target.result);
+
+        if (!Array.isArray(datosImportados)) {
+          throw new Error("El archivo no tiene el formato correcto.");
+        }
+
+        registros = datosImportados;
+        localStorage.setItem("registros", JSON.stringify(registros));
+        actualizarTabla();
+        alert("Datos importados correctamente.");
+      } catch (error) {
+        alert(`Error al importar los datos: ${error.message}`);
+      }
+    };
+
+    reader.readAsText(archivo);
+  });
+
+  window.editarRegistro = (index) => {
+    const nuevaFechaHora = prompt("Ingrese la nueva fecha y hora (formato YYYY-MM-DD hh:mm AM/PM):");
+    const nuevoValor = prompt("Ingrese el nuevo valor de glucosa:");
+    const nuevasNotas = prompt("Ingrese las nuevas notas:");
+
+    if (nuevaFechaHora && nuevoValor !== null && !isNaN(nuevoValor)) {
+      const nuevaFechaISO = new Date(nuevaFechaHora).toISOString();
+
+      registros[index].fecha = nuevaFechaISO;
+      registros[index].resultado = parseFloat(nuevoValor);
+      registros[index].notas = nuevasNotas;
+      localStorage.setItem("registros", JSON.stringify(registros));
+      actualizarTabla();
+    } else {
+      alert("Por favor, ingresa valores válidos.");
+    }
+  };
+
+  window.eliminarRegistro = (index) => {
+    if (confirm("¿Está seguro de eliminar este registro?")) {
+      registros.splice(index, 1);
+      localStorage.setItem("registros", JSON.stringify(registros));
+      actualizarTabla();
+    }
+  };
+
+  resetearBtn.addEventListener("click", () => {
+    if (confirm("¿Está seguro de resetear todos los datos?")) {
+      registros = [];
+      localStorage.removeItem("registros");
+      actualizarTabla();
+    }
+  });
+
+  // Modo Nocturno
+  modoNocturnoBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    if (document.body.classList.contains("dark-mode")) {
+      modoNocturnoBtn.textContent = "Modo Día";
+    } else {
+      modoNocturnoBtn.textContent = "Modo Noche";
+    }
+  });
+
   // Recordatorios Personalizados
-  const diaRecordatorioInput = document.getElementById("dia-recordatorio");
   const horaRecordatorioInput = document.getElementById("hora-recordatorio");
   const agregarRecordatorioBtn = document.getElementById("agregar-recordatorio");
   const listaRecordatorios = document.getElementById("lista-recordatorios");
@@ -167,9 +254,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function actualizarListaRecordatorios() {
     listaRecordatorios.innerHTML = "";
-    recordatorios.forEach(({ dia, hora }, index) => {
+    recordatorios.forEach((hora, index) => {
       const li = document.createElement("li");
-      li.textContent = `${dia} a las ${hora}`;
+      li.textContent = hora;
 
       // Botón para eliminar un recordatorio específico
       const eliminarBtn = document.createElement("button");
@@ -187,46 +274,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   agregarRecordatorioBtn.addEventListener("click", () => {
-    const dia = diaRecordatorioInput.value;
     const hora = horaRecordatorioInput.value;
-
-    if (!dia || !hora) {
-      alert("Por favor, selecciona un día y una hora válida.");
+    if (!hora) {
+      alert("Por favor, selecciona una hora válida.");
       return;
     }
-
-    recordatorios.push({ dia, hora });
+    recordatorios.push(hora);
     actualizarListaRecordatorios();
-    diaRecordatorioInput.value = "";
     horaRecordatorioInput.value = "";
   });
 
   setInterval(() => {
     const ahora = new Date();
-    const diaActual = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][ahora.getDay()];
     const horaActual = `${agregarCero(ahora.getHours())}:${agregarCero(ahora.getMinutes())}`;
-
-    const recordatorioActivo = recordatorios.find(
-      (r) => r.dia === diaActual && r.hora === horaActual
-    );
-
-    if (recordatorioActivo) {
-      // Reproducir alarma inmediatamente
+    if (recordatorios.includes(horaActual)) {
+      alert(`¡Es hora de medir tu glucosa! (${horaActual})`);
       const audio = new Audio("assets/alarm.mp3"); // Asegúrate de tener el archivo de audio
       audio.play().catch((error) => {
         console.error("Error al reproducir el audio:", error);
       });
-
-      // Mostrar pop-up personalizado
-      const popup = document.createElement("div");
-      popup.className = "popup";
-      popup.textContent = "¡Es hora de medir tu glucosa!";
-      document.body.appendChild(popup);
-
-      // Eliminar el pop-up después de 5 segundos
-      setTimeout(() => {
-        document.body.removeChild(popup);
-      }, 5000);
     }
   }, 60000);
 
@@ -257,15 +323,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const whatsappLink = `https://wa.me/?text=${encodeURIComponent(datos)}`;
     window.open(whatsappLink, "_blank");
-  });
-
-  // Modo Nocturno
-  modoNocturnoBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    if (document.body.classList.contains("dark-mode")) {
-      modoNocturnoBtn.textContent = "Modo Día";
-    } else {
-      modoNocturnoBtn.textContent = "Modo Noche";
-    }
   });
 });
