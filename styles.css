@@ -35,9 +35,6 @@ header {
   background-color: #62A5ED; /* Azul claro */
   color: white;
   margin-bottom: 30px; /* Espacio debajo del encabezado */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 header h1 {
@@ -49,19 +46,6 @@ header h1 {
 header p {
   font-size: 14px; /* Tamaño del subtítulo */
   margin: 5px 0 0; /* Espaciado entre el título y el subtítulo */
-}
-
-.modo-nocturno-icon {
-  width: 30px;
-  height: 30px;
-  background-image: url("https://img.icons8.com/ios-filled/50/FFFFFF/sun--v1.png");
-  background-size: cover;
-  border: none;
-  cursor: pointer;
-}
-
-body.dark-mode .modo-nocturno-icon {
-  background-image: url("https://img.icons8.com/ios-filled/50/FFFFFF/moon-symbol.png");
 }
 
 #registro label {
@@ -139,12 +123,12 @@ th {
 .botones-adicionales {
   margin-top: 30px;
   display: flex;
-  flex-wrap: wrap; /* Permitir que los botones se organicen en múltiples filas */
-  gap: 10px; /* Espaciado entre botones */
+  justify-content: space-between; /* Espaciado entre botones */
 }
 
 .botones-adicionales button {
-  flex: 1 1 200px; /* Cada botón ocupa hasta 200px o menos */
+  flex: 1; /* Igual ancho para todos los botones */
+  margin: 0 10px; /* Espaciado entre botones */
   padding: 12px;
   background: linear-gradient(to bottom, #62A5ED, #4B8DDF); /* Degradado azul */
   color: white;
@@ -183,9 +167,5 @@ th {
   #registro input[type="text"],
   #registro input[type="number"] {
     margin-bottom: 30px; /* Aumentar espacio entre campos */
-  }
-
-  .botones-adicionales button {
-    flex-basis: 100%; /* Cada botón ocupa toda la fila en pantallas pequeñas */
   }
 }
