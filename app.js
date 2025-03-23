@@ -33,12 +33,23 @@ document.addEventListener("DOMContentLoaded", () => {
       row.innerHTML = `
         <td>${new Date(registro.fecha).toLocaleString("es-ES", { hour12: true })}</td>
         <td>${registro.resultado} mg/dL</td>
-        <td>${registro.notas || "--"}</td>
         <td>
           <button class="editar" onclick="editarRegistro(${index})">Editar</button>
           <button class="eliminar" onclick="eliminarRegistro(${index})">Eliminar</button>
         </td>
       `;
+
+      // Agregar nota debajo de la fila (si existe)
+      if (registro.notas) {
+        const nota = document.createElement("tr");
+        nota.innerHTML = `
+          <td colspan="3" style="padding: 8px; background-color: #f9f9f9; border: 1px solid #ddd;">
+            Nota: ${registro.notas}
+          </td>
+        `;
+        row.appendChild(nota);
+      }
+
       tablaResultados.appendChild(row);
     });
     calcularPromedioHbA1c();
