@@ -17,10 +17,9 @@
     <header>
       <h1>Mi Glucosa</h1>
       <p>Registro Diario</p>
+      <!-- Botón de modo nocturno alineado a la derecha -->
+      <button id="modo-nocturno">Modo Noche</button>
     </header>
-
-    <!-- Botón de modo nocturno -->
-    <button id="modo-nocturno">Modo Noche</button>
 
     <!-- Formulario de Registro -->
     <section id="registro">
@@ -91,11 +90,15 @@
 
     <!-- Botones Adicionales -->
     <div class="botones-adicionales">
-      <button id="compartir-whatsapp">Compartir por WhatsApp</button>
-      <button id="compartir-email">Compartir por Email</button>
-      <button id="exportar-datos">Exportar Datos</button>
-      <button id="importar-datos">Importar Datos</button>
-      <button id="resetear">Eliminar Registros</button>
+      <div class="fila-botones">
+        <button id="compartir-whatsapp">Compartir por WhatsApp</button>
+        <button id="compartir-email">Compartir por Email</button>
+        <button id="exportar-datos">Exportar Datos</button>
+      </div>
+      <div class="fila-botones centrada">
+        <button id="importar-datos">Importar Datos</button>
+        <button id="resetear">Eliminar Registros</button>
+      </div>
     </div>
 
     <!-- Campo oculto para la selección de archivos -->
