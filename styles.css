@@ -138,24 +138,55 @@ th, td {
   border: 1px solid #ddd;
 }
 
+/* Encabezados de la tabla con un gris más oscuro */
 th {
-  background-color: #f2f2f2;
+  background-color: #333; /* Gris más oscuro */
+  color: black; /* Letras negras */
+}
+
+/* Modo nocturno: mantener las letras negras en los encabezados */
+body.dark-mode th {
+  background-color: #444; /* Gris oscuro en modo nocturno */
+  color: black; /* Letras negras */
+}
+
+/* Notas debajo de cada fila */
+.nota {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  margin-top: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+body.dark-mode .nota {
+  background-color: #222; /* Fondo más oscuro en modo nocturno */
+  color: #e0e0e0; /* Texto claro en modo nocturno */
 }
 
 /* Recuadro de HbA1C */
 #promedio-hba1c-container {
   margin-top: 30px;
   padding: 20px;
-  background-color: #f2f2f2;
+  background-color: #333; /* Gris más oscuro */
   border: 1px solid #ccc;
   border-radius: 8px;
   text-align: center;
+  color: black; /* Letras negras */
+}
+
+/* Modo nocturno: mantener las letras negras en el recuadro de HbA1c */
+body.dark-mode #promedio-hba1c-container {
+  background-color: #444; /* Gris oscuro en modo nocturno */
+  color: black; /* Letras negras */
 }
 
 #promedio-hba1c {
   font-weight: bold;
   font-size: 20px; /* Letras más grandes */
-  color: #333;
 }
 
 /* Botones adicionales */
