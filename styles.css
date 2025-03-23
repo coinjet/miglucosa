@@ -35,7 +35,6 @@ header {
   background-color: #62A5ED; /* Azul claro */
   color: white;
   margin-bottom: 30px; /* Espacio debajo del encabezado */
-  position: relative;
 }
 
 header h1 {
@@ -49,11 +48,14 @@ header p {
   margin: 5px 0 0; /* Espaciado entre el título y el subtítulo */
 }
 
-/* Botón de modo nocturno alineado a la derecha */
+/* Botón de modo nocturno debajo del banner */
+.modo-nocturno-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
 #modo-nocturno {
-  position: absolute;
-  top: 15px;
-  right: 15px;
   padding: 8px 16px;
   background: linear-gradient(to bottom, #62A5ED, #4B8DDF);
   color: white;
@@ -91,7 +93,7 @@ header p {
 
 #registro textarea {
   width: calc(100% - 22px); /* Ocupa todo el ancho */
-  height: 80px; /* Altura fija */
+  height: 40px; /* Altura igual al campo de glucosa */
   padding: 12px;
   margin-bottom: 20px;
   border: 1px solid #ccc;
@@ -120,6 +122,40 @@ header p {
 #registro button:active {
   transform: scale(0.98); /* Efecto de clic */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tabla de resultados */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  overflow-x: auto; /* Permite desplazarse horizontalmente si es necesario */
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+/* Recuadro de HbA1C */
+#promedio-hba1c-container {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+}
+
+#promedio-hba1c {
+  font-weight: bold;
+  font-size: 20px; /* Letras más grandes */
+  color: #333;
 }
 
 /* Botones adicionales */
