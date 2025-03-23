@@ -234,9 +234,9 @@ document.addEventListener("DOMContentLoaded", () => {
   modoNocturnoBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
     if (document.body.classList.contains("dark-mode")) {
-      modoNocturnoBtn.textContent = "Desactivar Modo Nocturno";
+      modoNocturnoBtn.style.backgroundImage = "url('https://img.icons8.com/ios-filled/50/FFFFFF/moon-symbol.png')";
     } else {
-      modoNocturnoBtn.textContent = "Activar Modo Nocturno";
+      modoNocturnoBtn.style.backgroundImage = "url('https://img.icons8.com/ios-filled/50/FFFFFF/sun--v1.png')";
     }
   });
 
@@ -252,6 +252,17 @@ document.addEventListener("DOMContentLoaded", () => {
     recordatorios.forEach((hora, index) => {
       const li = document.createElement("li");
       li.textContent = hora;
+
+      // Botón para eliminar un recordatorio específico
+      const eliminarBtn = document.createElement("button");
+      eliminarBtn.textContent = "Eliminar";
+      eliminarBtn.style.marginLeft = "10px";
+      eliminarBtn.onclick = () => {
+        recordatorios.splice(index, 1); // Eliminar el recordatorio del array
+        actualizarListaRecordatorios();
+      };
+
+      li.appendChild(eliminarBtn);
       listaRecordatorios.appendChild(li);
     });
     localStorage.setItem("recordatorios", JSON.stringify(recordatorios));
@@ -273,6 +284,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const horaActual = `${agregarCero(ahora.getHours())}:${agregarCero(ahora.getMinutes())}`;
     if (recordatorios.includes(horaActual)) {
       alert(`¡Es hora de medir tu glucosa! (${horaActual})`);
+      const audio = new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3");
+      audio.play(); // Reproducir alarma sonora
     }
   }, 60000);
 
