@@ -35,6 +35,7 @@ header {
   background-color: #62A5ED; /* Azul claro */
   color: white;
   margin-bottom: 30px; /* Espacio debajo del encabezado */
+  position: relative;
 }
 
 header h1 {
@@ -46,6 +47,30 @@ header h1 {
 header p {
   font-size: 14px; /* Tamaño del subtítulo */
   margin: 5px 0 0; /* Espaciado entre el título y el subtítulo */
+}
+
+/* Botón de modo nocturno alineado a la derecha */
+#modo-nocturno {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 8px 16px;
+  background: linear-gradient(to bottom, #62A5ED, #4B8DDF);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#modo-nocturno:hover {
+  background: linear-gradient(to bottom, #4B8DDF, #3A73B9);
+}
+
+#modo-nocturno:active {
+  transform: scale(0.98);
 }
 
 #registro label {
@@ -62,6 +87,17 @@ header p {
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 16px;
+}
+
+#registro textarea {
+  width: calc(100% - 22px); /* Ocupa todo el ancho */
+  height: 80px; /* Altura fija */
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  resize: none; /* Desactivar redimensionamiento */
 }
 
 #registro button {
@@ -86,51 +122,26 @@ header p {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  overflow-x: auto; /* Permite desplazarse horizontalmente si es necesario */
-}
-
-th, td {
-  padding: 12px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-
-th {
-  background-color: #f2f2f2;
-}
-
-/* Estilo para el recuadro del HbA1C */
-#promedio-hba1c-container {
-  margin-top: 30px;
-  padding: 20px;
-  background-color: #f2f2f2;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  text-align: center;
-}
-
-#promedio-hba1c {
-  font-weight: bold;
-  font-size: 18px;
-  color: #333;
-}
-
 /* Botones adicionales */
 .botones-adicionales {
   margin-top: 30px;
+}
+
+.fila-botones {
   display: flex;
-  justify-content: space-between; /* Espaciado entre botones */
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.fila-botones.centrada {
+  justify-content: center;
 }
 
 .botones-adicionales button {
-  flex: 1; /* Igual ancho para todos los botones */
-  margin: 0 10px; /* Espaciado entre botones */
+  flex: 1;
+  margin: 0 5px;
   padding: 12px;
-  background: linear-gradient(to bottom, #62A5ED, #4B8DDF); /* Degradado azul */
+  background: linear-gradient(to bottom, #62A5ED, #4B8DDF);
   color: white;
   border: none;
   border-radius: 8px;
@@ -151,21 +162,8 @@ th {
 /* Estilo específico para el botón "Eliminar Registros" */
 .botones-adicionales button#resetear {
   background: linear-gradient(to bottom, #FFB41B, #E69A00); /* Degradado naranja */
-  white-space: pre-line; /* Para dividir el texto en dos líneas */
 }
 
 .botones-adicionales button#resetear:hover {
   background: linear-gradient(to bottom, #E69A00, #CC8500);
-}
-
-/* Ajustes para espaciado en dispositivos móviles */
-@media (max-width: 600px) {
-  #registro label {
-    margin-bottom: 15px; /* Aumentar espacio entre etiquetas y campos */
-  }
-
-  #registro input[type="text"],
-  #registro input[type="number"] {
-    margin-bottom: 30px; /* Aumentar espacio entre campos */
-  }
 }
