@@ -165,6 +165,21 @@ body.dark-mode .nota {
   color: #e0e0e0; /* Texto claro en modo nocturno */
 }
 
+/* Pop-up personalizado */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: #FFB41B;
+  color: black;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  text-align: center;
+}
+
 /* Recuadro de HbA1C */
 #promedio-hba1c-container {
   margin-top: 30px;
