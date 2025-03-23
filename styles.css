@@ -140,6 +140,29 @@ th, td {
 
 th {
   background-color: #f2f2f2;
+  color: black; /* Letras negras en los títulos */
+}
+
+body.dark-mode th {
+  background-color: #333; /* Fondo gris más oscuro en modo nocturno */
+  color: black; /* Letras negras en los títulos */
+}
+
+/* Notas debajo de cada fila */
+.nota {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  margin-top: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+body.dark-mode .nota {
+  background-color: #222; /* Fondo más oscuro en modo nocturno */
+  color: #e0e0e0; /* Texto claro en modo nocturno */
 }
 
 /* Recuadro de HbA1C */
@@ -152,54 +175,16 @@ th {
   text-align: center;
 }
 
+body.dark-mode #promedio-hba1c-container {
+  background-color: #333; /* Fondo gris más oscuro en modo nocturno */
+}
+
 #promedio-hba1c {
   font-weight: bold;
   font-size: 20px; /* Letras más grandes */
   color: #333;
 }
 
-/* Botones adicionales */
-.botones-adicionales {
-  margin-top: 30px;
-}
-
-.fila-botones {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.fila-botones.centrada {
-  justify-content: center;
-}
-
-.botones-adicionales button {
-  flex: 1;
-  margin: 0 5px;
-  padding: 12px;
-  background: linear-gradient(to bottom, #62A5ED, #4B8DDF);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.botones-adicionales button:hover {
-  background: linear-gradient(to bottom, #4B8DDF, #3A73B9);
-}
-
-.botones-adicionales button:active {
-  transform: scale(0.98);
-}
-
-/* Estilo específico para el botón "Eliminar Registros" */
-.botones-adicionales button#resetear {
-  background: linear-gradient(to bottom, #FFB41B, #E69A00); /* Degradado naranja */
-}
-
-.botones-adicionales button#resetear:hover {
-  background: linear-gradient(to bottom, #E69A00, #CC8500);
+body.dark-mode #promedio-hba1c {
+  color: #e0e0e0; /* Texto claro en modo nocturno */
 }
