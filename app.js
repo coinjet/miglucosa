@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const fechaHoraInput = document.getElementById("fecha-hora");
   const glucosaInput = document.getElementById("glucosa");
+  const notasInput = document.getElementById("notas");
   const guardarBtn = document.getElementById("guardar");
   const tablaResultados = document.getElementById("tabla-resultados");
   const promedioHbA1c = document.getElementById("promedio-hba1c");
@@ -18,6 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const archivoImportarInput = document.getElementById("archivo-importar");
   const mesSeleccionado = document.getElementById("mes-seleccionado");
   const graficaGlucosa = document.getElementById("grafica-glucosa").getContext("2d");
+  const compartirEmailBtn = document.getElementById("compartir-email");
+  const compartirWhatsappBtn = document.getElementById("compartir-whatsapp");
+  const modoNocturnoBtn = document.getElementById("modo-nocturno");
 
   let registros = JSON.parse(localStorage.getItem("registros")) || [];
   let chartInstance = null;
@@ -29,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
       row.innerHTML = `
         <td>${new Date(registro.fecha).toLocaleString("es-ES", { hour12: true })}</td>
         <td>${registro.resultado} mg/dL</td>
+        <td>${registro.notas || "--"}</td>
         <td>
           <button class="editar" onclick="editarRegistro(${index})">Editar</button>
           <button class="eliminar" onclick="eliminarRegistro(${index})">Eliminar</button>
@@ -113,13 +118,13 @@ document.addEventListener("DOMContentLoaded", () => {
   guardarBtn.addEventListener("click", () => {
     const fechaHora = fechaHoraInput.value;
     const resultado = parseFloat(glucosaInput.value);
+    const notas = notasInput.value;
 
     if (!fechaHora || !resultado || isNaN(resultado)) {
       alert("Por favor, ingresa una fecha/hora válida y un nivel de glucosa.");
       return;
     }
 
-    // Mostrar mensaje de confirmación
     const confirmacion = confirm(
       "¿Está seguro de la fecha/hora y nivel de glucosa que va a agregar?"
     );
@@ -130,6 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const nuevoRegistro = {
         fecha: fechaISO,
         resultado: resultado,
+        notas: notas,
       };
 
       registros.push(nuevoRegistro);
@@ -137,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       fechaHoraInput.value = "";
       glucosaInput.value = "";
+      notasInput.value = "";
 
       actualizarTabla();
     }
@@ -192,12 +199,14 @@ document.addEventListener("DOMContentLoaded", () => {
   window.editarRegistro = (index) => {
     const nuevaFechaHora = prompt("Ingrese la nueva fecha y hora (formato YYYY-MM-DD hh:mm AM/PM):");
     const nuevoValor = prompt("Ingrese el nuevo valor de glucosa:");
+    const nuevasNotas = prompt("Ingrese las nuevas notas:");
 
     if (nuevaFechaHora && nuevoValor !== null && !isNaN(nuevoValor)) {
       const nuevaFechaISO = new Date(nuevaFechaHora).toISOString();
 
       registros[index].fecha = nuevaFechaISO;
       registros[index].resultado = parseFloat(nuevoValor);
+      registros[index].notas = nuevasNotas;
       localStorage.setItem("registros", JSON.stringify(registros));
       actualizarTabla();
     } else {
@@ -221,6 +230,103 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Modo Nocturno
+  modoNocturnoBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    if (document.body.classList.contains("dark-mode")) {
+      modoNocturnoBtn.textContent = "Desactivar Modo Nocturno";
+    } else {
+      modoNocturnoBtn.textContent = "Activar Modo Nocturno";
+    }
+  });
+
+  // Recordatorios Personalizados
+  const horaRecordatorioInput = document.getElementById("hora-recordatorio");
+  const agregarRecordatorioBtn = document.getElementById("agregar-recordatorio");
+  const listaRecordatorios = document.getElementById("lista-recordatorios");
+
+  let recordatorios = JSON.parse(localStorage.getItem("recordatorios")) || [];
+
+  function actualizarListaRecordatorios() {
+    listaRecordatorios.innerHTML = "";
+    recordatorios.forEach((hora, index) => {
+      const li = document.createElement("li");
+      li.textContent = hora;
+      listaRecordatorios.appendChild(li);
+    });
+    localStorage.setItem("recordatorios", JSON.stringify(recordatorios));
+  }
+
+  agregarRecordatorioBtn.addEventListener("click", () => {
+    const hora = horaRecordatorioInput.value;
+    if (!hora) {
+      alert("Por favor, selecciona una hora válida.");
+      return;
+    }
+    recordatorios.push(hora);
+    actualizarListaRecordatorios();
+    horaRecordatorioInput.value = "";
+  });
+
+  setInterval(() => {
+    const ahora = new Date();
+    const horaActual = `${agregarCero(ahora.getHours())}:${agregarCero(ahora.getMinutes())}`;
+    if (recordatorios.includes(horaActual)) {
+      alert(`¡Es hora de medir tu glucosa! (${horaActual})`);
+    }
+  }, 60000);
+
+  function agregarCero(numero) {
+    return numero < 10 ? `0${numero}` : numero;
+  }
+
+  // Compartir Resultados
+  compartirEmailBtn.addEventListener("click", () => {
+    const datos = registros.map(
+      (r) =>
+        `${new Date(r.fecha).toLocaleString()} - ${r.resultado} mg/dL${
+          r.notas ? ` (${r.notas})` : ""
+        }`
+    ).join("\n");
+
+    const mailtoLink = `mailto:?subject=Registros%20de%20Glucosa&body=${encodeURIComponent(datos)}`;
+    window.location.href = mailtoLink;
+  });
+
+  compartirWhatsappBtn.addEventListener("click", () => {
+    const datos = registros.map(
+      (r) =>
+        `${new Date(r.fecha).toLocaleString()} - ${r.resultado} mg/dL${
+          r.notas ? ` (${r.notas})` : ""
+        }`
+    ).join("\n");
+
+    const whatsappLink = `https://wa.me/?text=${encodeURIComponent(datos)}`;
+    window.open(whatsappLink, "_blank");
+  });
+
+  // Exportar Datos en PDF
+  const { jsPDF } = window.jspdf;
+
+  exportarDatosBtn.addEventListener("click", () => {
+    const doc = new jsPDF();
+    doc.text("Registros de Glucosa", 10, 10);
+
+    registros.forEach((r, index) => {
+      const y = 20 + index * 10;
+      doc.text(
+        `${new Date(r.fecha).toLocaleString()} - ${r.resultado} mg/dL${
+          r.notas ? ` (${r.notas})` : ""
+        }`,
+        10,
+        y
+      );
+    });
+
+    doc.save("registros-glucosa.pdf");
+  });
+
   // Inicializar la tabla al cargar la página
   actualizarTabla();
+  actualizarListaRecordatorios();
 });
