@@ -1,327 +1,205 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // Inicializar Flatpickr
-  flatpickr("#fecha-hora", {
-    enableTime: true,
-    dateFormat: "Y-m-d h:i K",
-    time_24hr: false,
-    minuteIncrement: 5,
-  });
+/* styles.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;
+  transition: background-color 0.3s, color 0.3s; /* Transición suave */
+}
 
-  const fechaHoraInput = document.getElementById("fecha-hora");
-  const glucosaInput = document.getElementById("glucosa");
-  const notasInput = document.getElementById("notas");
-  const guardarBtn = document.getElementById("guardar");
-  const tablaResultados = document.getElementById("tabla-resultados");
-  const promedioHbA1c = document.getElementById("promedio-hba1c");
-  const resetearBtn = document.getElementById("resetear");
-  const exportarDatosBtn = document.getElementById("exportar-datos");
-  const importarDatosBtn = document.getElementById("importar-datos");
-  const archivoImportarInput = document.getElementById("archivo-importar");
-  const mesSeleccionado = document.getElementById("mes-seleccionado");
-  const graficaGlucosa = document.getElementById("grafica-glucosa").getContext("2d");
-  const compartirEmailBtn = document.getElementById("compartir-email");
-  const compartirWhatsappBtn = document.getElementById("compartir-whatsapp");
-  const modoNocturnoBtn = document.getElementById("modo-nocturno");
+.container {
+  max-width: 800px; /* Ancho máximo del contenedor */
+  margin: 0 auto; /* Centrar el contenido */
+  padding: 20px;
+  border: 1px solid #ccc; /* Borde delgado */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  background-color: white;
+  transition: background-color 0.3s, color 0.3s;
+}
 
-  let registros = JSON.parse(localStorage.getItem("registros")) || [];
-  let chartInstance = null;
+/* Modo nocturno */
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
 
-  function actualizarTabla() {
-    tablaResultados.innerHTML = "";
-    registros.forEach((registro, index) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${new Date(registro.fecha).toLocaleString("es-ES", { hour12: true })}</td>
-        <td>${registro.resultado} mg/dL</td>
-        <td>${registro.notas || "--"}</td>
-        <td>
-          <button class="editar" onclick="editarRegistro(${index})">Editar</button>
-          <button class="eliminar" onclick="eliminarRegistro(${index})">Eliminar</button>
-        </td>
-      `;
-      tablaResultados.appendChild(row);
-    });
-    calcularPromedioHbA1c();
-    actualizarGrafica();
-  }
+body.dark-mode .container {
+  background-color: #1e1e1e;
+  border-color: #333;
+}
 
-  function calcularPromedioHbA1c() {
-    if (registros.length === 0) {
-      promedioHbA1c.textContent = "Tu HbA1c estimado es: --%";
-      return;
-    }
-    const suma = registros.reduce((acc, reg) => acc + reg.resultado, 0);
-    const promedio = suma / registros.length;
-    const hba1c = ((promedio + 46.7) / 28.7).toFixed(2);
-    promedioHbA1c.textContent = `Tu HbA1c estimado es: ${hba1c}%`;
-  }
+header {
+  text-align: center;
+  padding: 15px 0; /* Reducir altura de la barra azul */
+  background-color: #62A5ED; /* Azul claro */
+  color: white;
+  margin-bottom: 30px; /* Espacio debajo del encabezado */
+}
 
-  function actualizarGrafica() {
-    const mes = mesSeleccionado.value;
-    const datosMes = registros.filter((registro) => {
-      const fecha = new Date(registro.fecha);
-      return fecha.getMonth() + 1 === parseInt(mes);
-    });
+header h1 {
+  font-size: 24px; /* Tamaño del título principal */
+  font-weight: bold; /* Negrita para el título */
+  margin: 0; /* Eliminar margen adicional */
+}
 
-    const fechas = datosMes.map((registro) =>
-      new Date(registro.fecha).toLocaleDateString("es-ES")
-    );
-    const niveles = datosMes.map((registro) => registro.resultado);
+header p {
+  font-size: 14px; /* Tamaño del subtítulo */
+  margin: 5px 0 0; /* Espaciado entre el título y el subtítulo */
+}
 
-    if (chartInstance) {
-      chartInstance.destroy(); // Destruir el gráfico anterior si existe
-    }
+/* Botón de modo nocturno debajo del banner */
+.modo-nocturno-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
 
-    chartInstance = new Chart(graficaGlucosa, {
-      type: "line", // Tipo de gráfico (línea)
-      data: {
-        labels: fechas, // Eje X: Fechas
-        datasets: [
-          {
-            label: "Nivel de Glucosa (mg/dL)",
-            data: niveles, // Eje Y: Niveles de glucosa
-            borderColor: "#62A5ED",
-            backgroundColor: "rgba(98, 165, 237, 0.2)",
-            borderWidth: 2,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            display: true,
-          },
-        },
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: "Fecha",
-            },
-          },
-          y: {
-            title: {
-              display: true,
-              text: "Nivel de Glucosa (mg/dL)",
-            },
-          },
-        },
-      },
-    });
-  }
+#modo-nocturno {
+  padding: 8px 16px;
+  background: linear-gradient(to bottom, #62A5ED, #4B8DDF);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-  mesSeleccionado.addEventListener("change", () => {
-    actualizarGrafica(); // Actualizar gráfica al cambiar el mes
-  });
+#modo-nocturno:hover {
+  background: linear-gradient(to bottom, #4B8DDF, #3A73B9);
+}
 
-  guardarBtn.addEventListener("click", () => {
-    const fechaHora = fechaHoraInput.value;
-    const resultado = parseFloat(glucosaInput.value);
-    const notas = notasInput.value;
+#modo-nocturno:active {
+  transform: scale(0.98);
+}
 
-    if (!fechaHora || !resultado || isNaN(resultado)) {
-      alert("Por favor, ingresa una fecha/hora válida y un nivel de glucosa.");
-      return;
-    }
+#registro label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold; /* Aplicar negrita a las etiquetas */
+}
 
-    const confirmacion = confirm(
-      "¿Está seguro de la fecha/hora y nivel de glucosa que va a agregar?"
-    );
+#registro input[type="text"],
+#registro input[type="number"] {
+  width: calc(100% - 22px); /* Ajuste para evitar desbordamiento */
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
 
-    if (confirmacion) {
-      const fechaISO = new Date(fechaHora).toISOString();
+#registro textarea {
+  width: calc(100% - 22px); /* Ocupa todo el ancho */
+  height: 40px; /* Altura igual al campo de glucosa */
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  resize: none; /* Desactivar redimensionamiento */
+}
 
-      const nuevoRegistro = {
-        fecha: fechaISO,
-        resultado: resultado,
-        notas: notas,
-      };
+#registro button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(to bottom, #62A5ED, #4B8DDF); /* Degradado azul */
+  color: white;
+  border: none;
+  border-radius: 8px; /* Bordes redondeados */
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Efecto de clic */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-      registros.push(nuevoRegistro);
-      localStorage.setItem("registros", JSON.stringify(registros));
+#registro button:hover {
+  background: linear-gradient(to bottom, #4B8DDF, #3A73B9); /* Degradado más oscuro */
+}
 
-      fechaHoraInput.value = "";
-      glucosaInput.value = "";
-      notasInput.value = "";
+#registro button:active {
+  transform: scale(0.98); /* Efecto de clic */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-      actualizarTabla();
-    }
-  });
+/* Tabla de resultados */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  overflow-x: auto; /* Permite desplazarse horizontalmente si es necesario */
+}
 
-  exportarDatosBtn.addEventListener("click", () => {
-    const doc = new jsPDF();
-    doc.text("Registros de Glucosa", 10, 10);
+th, td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
 
-    registros.forEach((r, index) => {
-      const y = 20 + index * 10;
-      doc.text(
-        `${new Date(r.fecha).toLocaleString()} - ${r.resultado} mg/dL${
-          r.notas ? ` (${r.notas})` : ""
-        }`,
-        10,
-        y
-      );
-    });
+th {
+  background-color: #f2f2f2;
+}
 
-    doc.save("registros-glucosa.pdf");
-  });
+/* Recuadro de HbA1C */
+#promedio-hba1c-container {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+}
 
-  importarDatosBtn.addEventListener("click", () => {
-    archivoImportarInput.click();
-  });
+#promedio-hba1c {
+  font-weight: bold;
+  font-size: 20px; /* Letras más grandes */
+  color: #333;
+}
 
-  archivoImportarInput.addEventListener("change", (event) => {
-    const archivo = event.target.files[0];
+/* Botones adicionales */
+.botones-adicionales {
+  margin-top: 30px;
+}
 
-    if (!archivo) {
-      alert("No se seleccionó ningún archivo.");
-      return;
-    }
+.fila-botones {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
 
-    const reader = new FileReader();
+.fila-botones.centrada {
+  justify-content: center;
+}
 
-    reader.onload = (e) => {
-      try {
-        const datosImportados = JSON.parse(e.target.result);
+.botones-adicionales button {
+  flex: 1;
+  margin: 0 5px;
+  padding: 12px;
+  background: linear-gradient(to bottom, #62A5ED, #4B8DDF);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-        if (!Array.isArray(datosImportados)) {
-          throw new Error("El archivo no tiene el formato correcto.");
-        }
+.botones-adicionales button:hover {
+  background: linear-gradient(to bottom, #4B8DDF, #3A73B9);
+}
 
-        registros = datosImportados;
-        localStorage.setItem("registros", JSON.stringify(registros));
-        actualizarTabla();
-        alert("Datos importados correctamente.");
-      } catch (error) {
-        alert(`Error al importar los datos: ${error.message}`);
-      }
-    };
+.botones-adicionales button:active {
+  transform: scale(0.98);
+}
 
-    reader.readAsText(archivo);
-  });
+/* Estilo específico para el botón "Eliminar Registros" */
+.botones-adicionales button#resetear {
+  background: linear-gradient(to bottom, #FFB41B, #E69A00); /* Degradado naranja */
+}
 
-  window.editarRegistro = (index) => {
-    const nuevaFechaHora = prompt("Ingrese la nueva fecha y hora (formato YYYY-MM-DD hh:mm AM/PM):");
-    const nuevoValor = prompt("Ingrese el nuevo valor de glucosa:");
-    const nuevasNotas = prompt("Ingrese las nuevas notas:");
-
-    if (nuevaFechaHora && nuevoValor !== null && !isNaN(nuevoValor)) {
-      const nuevaFechaISO = new Date(nuevaFechaHora).toISOString();
-
-      registros[index].fecha = nuevaFechaISO;
-      registros[index].resultado = parseFloat(nuevoValor);
-      registros[index].notas = nuevasNotas;
-      localStorage.setItem("registros", JSON.stringify(registros));
-      actualizarTabla();
-    } else {
-      alert("Por favor, ingresa valores válidos.");
-    }
-  };
-
-  window.eliminarRegistro = (index) => {
-    if (confirm("¿Está seguro de eliminar este registro?")) {
-      registros.splice(index, 1);
-      localStorage.setItem("registros", JSON.stringify(registros));
-      actualizarTabla();
-    }
-  };
-
-  resetearBtn.addEventListener("click", () => {
-    if (confirm("¿Está seguro de resetear todos los datos?")) {
-      registros = [];
-      localStorage.removeItem("registros");
-      actualizarTabla();
-    }
-  });
-
-  // Modo Nocturno
-  modoNocturnoBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    if (document.body.classList.contains("dark-mode")) {
-      modoNocturnoBtn.textContent = "Modo Día";
-    } else {
-      modoNocturnoBtn.textContent = "Modo Noche";
-    }
-  });
-
-  // Recordatorios Personalizados
-  const horaRecordatorioInput = document.getElementById("hora-recordatorio");
-  const agregarRecordatorioBtn = document.getElementById("agregar-recordatorio");
-  const listaRecordatorios = document.getElementById("lista-recordatorios");
-
-  let recordatorios = JSON.parse(localStorage.getItem("recordatorios")) || [];
-
-  function actualizarListaRecordatorios() {
-    listaRecordatorios.innerHTML = "";
-    recordatorios.forEach((hora, index) => {
-      const li = document.createElement("li");
-      li.textContent = hora;
-
-      // Botón para eliminar un recordatorio específico
-      const eliminarBtn = document.createElement("button");
-      eliminarBtn.textContent = "Eliminar";
-      eliminarBtn.style.marginLeft = "10px";
-      eliminarBtn.onclick = () => {
-        recordatorios.splice(index, 1); // Eliminar el recordatorio del array
-        actualizarListaRecordatorios();
-      };
-
-      li.appendChild(eliminarBtn);
-      listaRecordatorios.appendChild(li);
-    });
-    localStorage.setItem("recordatorios", JSON.stringify(recordatorios));
-  }
-
-  agregarRecordatorioBtn.addEventListener("click", () => {
-    const hora = horaRecordatorioInput.value;
-    if (!hora) {
-      alert("Por favor, selecciona una hora válida.");
-      return;
-    }
-    recordatorios.push(hora);
-    actualizarListaRecordatorios();
-    horaRecordatorioInput.value = "";
-  });
-
-  setInterval(() => {
-    const ahora = new Date();
-    const horaActual = `${agregarCero(ahora.getHours())}:${agregarCero(ahora.getMinutes())}`;
-    if (recordatorios.includes(horaActual)) {
-      alert(`¡Es hora de medir tu glucosa! (${horaActual})`);
-      const audio = new Audio("assets/alarm.mp3"); // Asegúrate de tener el archivo de audio
-      audio.play().catch((error) => {
-        console.error("Error al reproducir el audio:", error);
-      });
-    }
-  }, 60000);
-
-  function agregarCero(numero) {
-    return numero < 10 ? `0${numero}` : numero;
-  }
-
-  // Compartir Resultados
-  compartirEmailBtn.addEventListener("click", () => {
-    const datos = registros.map(
-      (r) =>
-        `${new Date(r.fecha).toLocaleString()} - ${r.resultado} mg/dL${
-          r.notas ? ` (${r.notas})` : ""
-        }`
-    ).join("\n");
-
-    const mailtoLink = `mailto:?subject=Registros%20de%20Glucosa&body=${encodeURIComponent(datos)}`;
-    window.location.href = mailtoLink;
-  });
-
-  compartirWhatsappBtn.addEventListener("click", () => {
-    const datos = registros.map(
-      (r) =>
-        `${new Date(r.fecha).toLocaleString()} - ${r.resultado} mg/dL${
-          r.notas ? ` (${r.notas})` : ""
-        }`
-    ).join("\n");
-
-    const whatsappLink = `https://wa.me/?text=${encodeURIComponent(datos)}`;
-    window.open(whatsappLink, "_blank");
-  });
-});
+.botones-adicionales button#resetear:hover {
+  background: linear-gradient(to bottom, #E69A00, #CC8500);
+}
