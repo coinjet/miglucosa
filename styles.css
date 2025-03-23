@@ -16,7 +16,6 @@ body {
   background-color: white;
 }
 
-/* Estilo del encabezado */
 header {
   text-align: center;
   padding: 15px 0; /* Reducir altura de la barra azul */
@@ -148,11 +147,11 @@ th {
 /* Ajustes para espaciado en dispositivos móviles */
 @media (max-width: 600px) {
   #registro label {
-    margin-bottom: 15px; /* Aumentar espacio entre etiquetas y campos */
+    margin-bottom: 20px; /* Aumentar espacio entre etiquetas y campos */
   }
 
   #registro input[type="text"],
   #registro input[type="number"] {
-    margin-bottom: 25px; /* Aumentar espacio entre campos */
+    margin-bottom: 30px; /* Aumentar espacio entre campos */
   }
 }
