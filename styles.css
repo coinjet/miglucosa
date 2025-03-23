@@ -138,15 +138,9 @@ th, td {
   border: 1px solid #ddd;
 }
 
-/* Encabezados de la tabla con un gris más oscuro */
+/* Encabezados de la tabla con un gris más claro */
 th {
-  background-color: #333; /* Gris más oscuro */
-  color: black; /* Letras negras */
-}
-
-/* Modo nocturno: mantener las letras negras en los encabezados */
-body.dark-mode th {
-  background-color: #444; /* Gris oscuro en modo nocturno */
+  background-color: #C9C8C5; /* Gris claro */
   color: black; /* Letras negras */
 }
 
@@ -171,66 +165,14 @@ body.dark-mode .nota {
 #promedio-hba1c-container {
   margin-top: 30px;
   padding: 20px;
-  background-color: #333; /* Gris más oscuro */
+  background-color: #C9C8C5; /* Gris claro */
   border: 1px solid #ccc;
   border-radius: 8px;
   text-align: center;
   color: black; /* Letras negras */
 }
 
-/* Modo nocturno: mantener las letras negras en el recuadro de HbA1c */
-body.dark-mode #promedio-hba1c-container {
-  background-color: #444; /* Gris oscuro en modo nocturno */
-  color: black; /* Letras negras */
-}
-
 #promedio-hba1c {
   font-weight: bold;
   font-size: 20px; /* Letras más grandes */
-}
-
-/* Botones adicionales */
-.botones-adicionales {
-  margin-top: 30px;
-}
-
-.fila-botones {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.fila-botones.centrada {
-  justify-content: center;
-}
-
-.botones-adicionales button {
-  flex: 1;
-  margin: 0 5px;
-  padding: 12px;
-  background: linear-gradient(to bottom, #62A5ED, #4B8DDF);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.botones-adicionales button:hover {
-  background: linear-gradient(to bottom, #4B8DDF, #3A73B9);
-}
-
-.botones-adicionales button:active {
-  transform: scale(0.98);
-}
-
-/* Estilo específico para el botón "Eliminar Registros" */
-.botones-adicionales button#resetear {
-  background: linear-gradient(to bottom, #FFB41B, #E69A00); /* Degradado naranja */
-}
-
-.botones-adicionales button#resetear:hover {
-  background: linear-gradient(to bottom, #E69A00, #CC8500);
 }
