@@ -157,103 +157,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  exportarDatosBtn.addEventListener("click", () => {
-    const doc = new jsPDF();
-    doc.text("Registros de Glucosa", 10, 10);
-
-    registros.forEach((r, index) => {
-      const y = 20 + index * 10;
-      doc.text(
-        `${new Date(r.fecha).toLocaleString()} - ${r.resultado} mg/dL${
-          r.notas ? ` (${r.notas})` : ""
-        }`,
-        10,
-        y
-      );
-    });
-
-    doc.save("registros-glucosa.pdf");
-  });
-
-  importarDatosBtn.addEventListener("click", () => {
-    archivoImportarInput.click();
-  });
-
-  archivoImportarInput.addEventListener("change", (event) => {
-    const archivo = event.target.files[0];
-
-    if (!archivo) {
-      alert("No se seleccionó ningún archivo.");
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      try {
-        const datosImportados = JSON.parse(e.target.result);
-
-        if (!Array.isArray(datosImportados)) {
-          throw new Error("El archivo no tiene el formato correcto.");
-        }
-
-        registros = datosImportados;
-        localStorage.setItem("registros", JSON.stringify(registros));
-        actualizarTabla();
-        alert("Datos importados correctamente.");
-      } catch (error) {
-        alert(`Error al importar los datos: ${error.message}`);
-      }
-    };
-
-    reader.readAsText(archivo);
-  });
-
-  window.editarRegistro = (index) => {
-    const nuevaFechaHora = prompt("Ingrese la nueva fecha y hora (formato YYYY-MM-DD hh:mm AM/PM):");
-    const nuevoValor = prompt("Ingrese el nuevo valor de glucosa:");
-    const nuevasNotas = prompt("Ingrese las nuevas notas:");
-
-    if (nuevaFechaHora && nuevoValor !== null && !isNaN(nuevoValor)) {
-      const nuevaFechaISO = new Date(nuevaFechaHora).toISOString();
-
-      registros[index].fecha = nuevaFechaISO;
-      registros[index].resultado = parseFloat(nuevoValor);
-      registros[index].notas = nuevasNotas;
-      localStorage.setItem("registros", JSON.stringify(registros));
-      actualizarTabla();
-    } else {
-      alert("Por favor, ingresa valores válidos.");
-    }
-  };
-
-  window.eliminarRegistro = (index) => {
-    if (confirm("¿Está seguro de eliminar este registro?")) {
-      registros.splice(index, 1);
-      localStorage.setItem("registros", JSON.stringify(registros));
-      actualizarTabla();
-    }
-  };
-
-  resetearBtn.addEventListener("click", () => {
-    if (confirm("¿Está seguro de resetear todos los datos?")) {
-      registros = [];
-      localStorage.removeItem("registros");
-      actualizarTabla();
-    }
-  });
-
-  // Modo Nocturno
-  modoNocturnoBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    if (document.body.classList.contains("dark-mode")) {
-      modoNocturnoBtn.textContent = "Modo Día";
-    } else {
-      modoNocturnoBtn.textContent = "Modo Noche";
-    }
-  });
-
   // Recordatorios Personalizados
+  const diaRecordatorioInput = document.getElementById("dia-recordatorio");
   const horaRecordatorioInput = document.getElementById("hora-recordatorio");
   const agregarRecordatorioBtn = document.getElementById("agregar-recordatorio");
   const listaRecordatorios = document.getElementById("lista-recordatorios");
@@ -262,9 +167,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function actualizarListaRecordatorios() {
     listaRecordatorios.innerHTML = "";
-    recordatorios.forEach((hora, index) => {
+    recordatorios.forEach(({ dia, hora }, index) => {
       const li = document.createElement("li");
-      li.textContent = hora;
+      li.textContent = `${dia} a las ${hora}`;
 
       // Botón para eliminar un recordatorio específico
       const eliminarBtn = document.createElement("button");
@@ -282,20 +187,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   agregarRecordatorioBtn.addEventListener("click", () => {
+    const dia = diaRecordatorioInput.value;
     const hora = horaRecordatorioInput.value;
-    if (!hora) {
-      alert("Por favor, selecciona una hora válida.");
+
+    if (!dia || !hora) {
+      alert("Por favor, selecciona un día y una hora válida.");
       return;
     }
-    recordatorios.push(hora);
+
+    recordatorios.push({ dia, hora });
     actualizarListaRecordatorios();
+    diaRecordatorioInput.value = "";
     horaRecordatorioInput.value = "";
   });
 
   setInterval(() => {
     const ahora = new Date();
+    const diaActual = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][ahora.getDay()];
     const horaActual = `${agregarCero(ahora.getHours())}:${agregarCero(ahora.getMinutes())}`;
-    if (recordatorios.includes(horaActual)) {
+
+    const recordatorioActivo = recordatorios.find(
+      (r) => r.dia === diaActual && r.hora === horaActual
+    );
+
+    if (recordatorioActivo) {
       // Reproducir alarma inmediatamente
       const audio = new Audio("assets/alarm.mp3"); // Asegúrate de tener el archivo de audio
       audio.play().catch((error) => {
@@ -304,15 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Mostrar pop-up personalizado
       const popup = document.createElement("div");
-      popup.style.position = "fixed";
-      popup.style.top = "20px";
-      popup.style.right = "20px";
-      popup.style.padding = "15px";
-      popup.style.backgroundColor = "#FFB41B";
-      popup.style.color = "black";
-      popup.style.borderRadius = "8px";
-      popup.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.2)";
-      popup.style.zIndex = "1000";
+      popup.className = "popup";
       popup.textContent = "¡Es hora de medir tu glucosa!";
       document.body.appendChild(popup);
 
@@ -350,5 +257,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const whatsappLink = `https://wa.me/?text=${encodeURIComponent(datos)}`;
     window.open(whatsappLink, "_blank");
+  });
+
+  // Modo Nocturno
+  modoNocturnoBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    if (document.body.classList.contains("dark-mode")) {
+      modoNocturnoBtn.textContent = "Modo Día";
+    } else {
+      modoNocturnoBtn.textContent = "Modo Noche";
+    }
   });
 });
