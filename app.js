@@ -150,16 +150,21 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   exportarDatosBtn.addEventListener("click", () => {
-    const datosExportar = JSON.stringify(registros);
-    const blob = new Blob([datosExportar], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
+    const doc = new jsPDF();
+    doc.text("Registros de Glucosa", 10, 10);
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "registros-glucosa.json";
-    a.click();
+    registros.forEach((r, index) => {
+      const y = 20 + index * 10;
+      doc.text(
+        `${new Date(r.fecha).toLocaleString()} - ${r.resultado} mg/dL${
+          r.notas ? ` (${r.notas})` : ""
+        }`,
+        10,
+        y
+      );
+    });
 
-    URL.revokeObjectURL(url);
+    doc.save("registros-glucosa.pdf");
   });
 
   importarDatosBtn.addEventListener("click", () => {
@@ -234,9 +239,9 @@ document.addEventListener("DOMContentLoaded", () => {
   modoNocturnoBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
     if (document.body.classList.contains("dark-mode")) {
-      modoNocturnoBtn.textContent = "Modo Noche";
-    } else {
       modoNocturnoBtn.textContent = "Modo Día";
+    } else {
+      modoNocturnoBtn.textContent = "Modo Noche";
     }
   });
 
@@ -285,7 +290,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (recordatorios.includes(horaActual)) {
       alert(`¡Es hora de medir tu glucosa! (${horaActual})`);
       const audio = new Audio("assets/alarm.mp3"); // Asegúrate de tener el archivo de audio
-      audio.play(); // Reproducir alarma sonora
+      audio.play().catch((error) => {
+        console.error("Error al reproducir el audio:", error);
+      });
     }
   }, 60000);
 
@@ -317,29 +324,4 @@ document.addEventListener("DOMContentLoaded", () => {
     const whatsappLink = `https://wa.me/?text=${encodeURIComponent(datos)}`;
     window.open(whatsappLink, "_blank");
   });
-
-  // Exportar Datos en PDF
-  const { jsPDF } = window.jspdf;
-
-  exportarDatosBtn.addEventListener("click", () => {
-    const doc = new jsPDF();
-    doc.text("Registros de Glucosa", 10, 10);
-
-    registros.forEach((r, index) => {
-      const y = 20 + index * 10;
-      doc.text(
-        `${new Date(r.fecha).toLocaleString()} - ${r.resultado} mg/dL${
-          r.notas ? ` (${r.notas})` : ""
-        }`,
-        10,
-        y
-      );
-    });
-
-    doc.save("registros-glucosa.pdf");
-  });
-
-  // Inicializar la tabla al cargar la página
-  actualizarTabla();
-  actualizarListaRecordatorios();
 });
