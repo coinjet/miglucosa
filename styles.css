@@ -45,7 +45,7 @@ header p {
 #registro input[type="number"] {
   width: calc(100% - 22px); /* Ajuste para evitar desbordamiento */
   padding: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 20px; /* Espaciado entre campos */
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 16px;
@@ -147,7 +147,7 @@ th {
 /* Ajustes para espaciado en dispositivos móviles */
 @media (max-width: 600px) {
   #registro label {
-    margin-bottom: 20px; /* Aumentar espacio entre etiquetas y campos */
+    margin-bottom: 15px; /* Aumentar espacio entre etiquetas y campos */
   }
 
   #registro input[type="text"],
