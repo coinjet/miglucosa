@@ -33,12 +33,20 @@ document.addEventListener("DOMContentLoaded", () => {
       row.innerHTML = `
         <td>${new Date(registro.fecha).toLocaleString("es-ES", { hour12: true })}</td>
         <td>${registro.resultado} mg/dL</td>
-        <td>${registro.notas || "--"}</td>
         <td>
           <button class="editar" onclick="editarRegistro(${index})">Editar</button>
           <button class="eliminar" onclick="eliminarRegistro(${index})">Eliminar</button>
         </td>
       `;
+
+      // Agregar nota debajo de la fila
+      if (registro.notas) {
+        const nota = document.createElement("div");
+        nota.className = "nota";
+        nota.textContent = `Nota: ${registro.notas}`;
+        row.appendChild(nota);
+      }
+
       tablaResultados.appendChild(row);
     });
     calcularPromedioHbA1c();
@@ -288,11 +296,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const ahora = new Date();
     const horaActual = `${agregarCero(ahora.getHours())}:${agregarCero(ahora.getMinutes())}`;
     if (recordatorios.includes(horaActual)) {
-      alert(`¡Es hora de medir tu glucosa! (${horaActual})`);
+      // Reproducir alarma inmediatamente
       const audio = new Audio("assets/alarm.mp3"); // Asegúrate de tener el archivo de audio
       audio.play().catch((error) => {
         console.error("Error al reproducir el audio:", error);
       });
+
+      // Mostrar pop-up personalizado
+      const popup = document.createElement("div");
+      popup.style.position = "fixed";
+      popup.style.top = "20px";
+      popup.style.right = "20px";
+      popup.style.padding = "15px";
+      popup.style.backgroundColor = "#FFB41B";
+      popup.style.color = "black";
+      popup.style.borderRadius = "8px";
+      popup.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.2)";
+      popup.style.zIndex = "1000";
+      popup.textContent = "¡Es hora de medir tu glucosa!";
+      document.body.appendChild(popup);
+
+      // Eliminar el pop-up después de 5 segundos
+      setTimeout(() => {
+        document.body.removeChild(popup);
+      }, 5000);
     }
   }, 60000);
 
