@@ -1,20 +1,10 @@
-/* styles.css */
+/* Estilos generales */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f9f9f9;
   color: #333;
-  transition: background-color 0.3s, color 0.3s; /* Transición suave */
-}
-
-.container {
-  max-width: 800px; /* Ancho máximo del contenedor */
-  margin: 0 auto; /* Centrar el contenido */
-  padding: 20px;
-  border: 1px solid #ccc; /* Borde delgado */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
-  background-color: white;
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -24,31 +14,42 @@ body.dark-mode {
   color: #e0e0e0;
 }
 
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  transition: background-color 0.3s, color 0.3s;
+}
+
 body.dark-mode .container {
   background-color: #1e1e1e;
   border-color: #333;
 }
 
+/* Encabezado */
 header {
   text-align: center;
-  padding: 15px 0; /* Reducir altura de la barra azul */
-  background-color: #62A5ED; /* Azul claro */
+  padding: 15px 0;
+  background-color: #62A5ED;
   color: white;
-  margin-bottom: 30px; /* Espacio debajo del encabezado */
+  margin-bottom: 30px;
 }
 
 header h1 {
-  font-size: 24px; /* Tamaño del título principal */
-  font-weight: bold; /* Negrita para el título */
-  margin: 0; /* Eliminar margen adicional */
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
 }
 
 header p {
-  font-size: 14px; /* Tamaño del subtítulo */
-  margin: 5px 0 0; /* Espaciado entre el título y el subtítulo */
+  font-size: 14px;
+  margin: 5px 0 0;
 }
 
-/* Botón de modo nocturno debajo del banner */
+/* Botón modo nocturno */
 .modo-nocturno-container {
   display: flex;
   justify-content: flex-end;
@@ -75,15 +76,16 @@ header p {
   transform: scale(0.98);
 }
 
+/* Formulario */
 #registro label {
   display: block;
   margin-bottom: 10px;
-  font-weight: bold; /* Aplicar negrita a las etiquetas */
+  font-weight: bold;
 }
 
 #registro input[type="text"],
 #registro input[type="number"] {
-  width: calc(100% - 22px); /* Ajuste para evitar desbordamiento */
+  width: calc(100% - 22px);
   padding: 12px;
   margin-bottom: 20px;
   border: 1px solid #ccc;
@@ -92,57 +94,104 @@ header p {
 }
 
 #registro textarea {
-  width: calc(100% - 22px); /* Ocupa todo el ancho */
-  height: 40px; /* Altura igual al campo de glucosa */
+  width: calc(100% - 22px);
+  height: 40px;
   padding: 12px;
   margin-bottom: 20px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 16px;
-  resize: none; /* Desactivar redimensionamiento */
+  resize: none;
 }
 
 #registro button {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(to bottom, #62A5ED, #4B8DDF); /* Degradado azul */
+  background: linear-gradient(to bottom, #62A5ED, #4B8DDF);
   color: white;
   border: none;
-  border-radius: 8px; /* Bordes redondeados */
+  border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Efecto de clic */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 #registro button:hover {
-  background: linear-gradient(to bottom, #4B8DDF, #3A73B9); /* Degradado más oscuro */
+  background: linear-gradient(to bottom, #4B8DDF, #3A73B9);
 }
 
 #registro button:active {
-  transform: scale(0.98); /* Efecto de clic */
+  transform: scale(0.98);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Tabla de resultados */
-table {
+/* ===== NUEVA TABLA DE REGISTROS ===== */
+.tabla-registros {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  overflow-x: auto; /* Permite desplazarse horizontalmente si es necesario */
-}
-
-th, td {
-  padding: 12px;
-  text-align: left;
   border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-th {
-  background-color: #f2f2f2;
+.fila {
+  display: flex;
+  border-bottom: 1px solid #ddd;
 }
 
-/* Recuadro de HbA1C */
+.fila:last-child {
+  border-bottom: none;
+}
+
+.encabezado {
+  background-color: #62A5ED;
+  color: white;
+  font-weight: bold;
+}
+
+.columna {
+  flex: 1;
+  padding: 12px;
+  text-align: center;
+  word-break: break-word;
+}
+
+.cuerpo-tabla .fila:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Botones de acción */
+.editar, .eliminar {
+  padding: 6px 12px;
+  margin: 0 3px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.editar {
+  background-color: #5bc0de;
+  color: white;
+}
+
+.editar:hover {
+  background-color: #46b8da;
+}
+
+.eliminar {
+  background-color: #d9534f;
+  color: white;
+}
+
+.eliminar:hover {
+  background-color: #c9302c;
+}
+
+/* Promedio HbA1c */
 #promedio-hba1c-container {
   margin-top: 30px;
   padding: 20px;
@@ -152,10 +201,24 @@ th {
   text-align: center;
 }
 
+body.dark-mode #promedio-hba1c-container {
+  background-color: #2d2d2d;
+  border-color: #444;
+}
+
 #promedio-hba1c {
   font-weight: bold;
-  font-size: 20px; /* Letras más grandes */
+  font-size: 20px;
   color: #333;
+}
+
+body.dark-mode #promedio-hba1c {
+  color: #e0e0e0;
+}
+
+/* Gráfica */
+#grafica {
+  margin-top: 30px;
 }
 
 /* Botones adicionales */
@@ -195,11 +258,61 @@ th {
   transform: scale(0.98);
 }
 
-/* Estilo específico para el botón "Eliminar Registros" */
+/* Botón Eliminar Registros */
 .botones-adicionales button#resetear {
-  background: linear-gradient(to bottom, #FFB41B, #E69A00); /* Degradado naranja */
+  background: linear-gradient(to bottom, #FFB41B, #E69A00);
 }
 
 .botones-adicionales button#resetear:hover {
   background: linear-gradient(to bottom, #E69A00, #CC8500);
+}
+
+/* Modo nocturno para la nueva tabla */
+body.dark-mode .tabla-registros {
+  border-color: #444;
+}
+
+body.dark-mode .encabezado {
+  background-color: #3A73B9;
+}
+
+body.dark-mode .cuerpo-tabla .fila {
+  border-color: #444;
+}
+
+body.dark-mode .cuerpo-tabla .fila:nth-child(even) {
+  background-color: #2d2d2d;
+}
+
+/* Recordatorios */
+#recordatorios {
+  margin-top: 20px;
+}
+
+#lista-recordatorios {
+  list-style: none;
+  padding: 0;
+}
+
+#lista-recordatorios li {
+  margin: 8px 0;
+  padding: 8px;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+body.dark-mode #lista-recordatorios li {
+  background-color: #2d2d2d;
+}
+
+#lista-recordatorios button {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
 }
