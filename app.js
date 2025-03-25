@@ -157,24 +157,33 @@ document.addEventListener("DOMContentLoaded", function() {
   // =============================================
   // FUNCIONES EXISTENTES (NO MODIFICADAS)
   // =============================================
-  function actualizarTabla() {
-    tablaResultados.innerHTML = "";
-    registros.forEach((registro, index) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${new Date(registro.fecha).toLocaleString("es-ES", { hour12: true })}</td>
-        <td>${registro.resultado} mg/dL</td>
-        <td>${registro.notas || "--"}</td>
-        <td>
-          <button class="editar" onclick="editarRegistro(${index})">Editar</button>
-          <button class="eliminar" onclick="eliminarRegistro(${index})">Eliminar</button>
-        </td>
-      `;
-      tablaResultados.appendChild(row);
-    });
-    calcularPromedioHbA1c();
-    actualizarGrafica();
-  }
+ function actualizarTabla() {
+  const tabla = document.getElementById("tabla-resultados");
+  tabla.innerHTML = "";
+
+  // Ordenar registros del más reciente al más antiguo
+  const registrosOrdenados = [...registros].reverse();
+
+  // Mostrar solo los últimos 5
+  const ultimosRegistros = registrosOrdenados.slice(0, 5);
+
+  ultimosRegistros.forEach((registro) => {
+    const fila = document.createElement("div");
+    fila.className = "fila";
+    fila.innerHTML = `
+      <div class="columna">${new Date(registro.fecha).toLocaleString("es-ES", { hour12: true })}</div>
+      <div class="columna">${registro.resultado}</div>
+      <div class="columna">
+        <button class="editar" onclick="editarRegistro(${registros.findIndex(r => r.fecha === registro.fecha)})">Editar</button>
+        <button class="eliminar" onclick="eliminarRegistro(${registros.findIndex(r => r.fecha === registro.fecha)})">Eliminar</button>
+      </div>
+    `;
+    tabla.appendChild(fila);
+  });
+
+  calcularPromedioHbA1c();
+  actualizarGrafica();
+}
 
   function calcularPromedioHbA1c() {
     if (registros.length === 0) {
