@@ -261,10 +261,48 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // =============================================
-  // BOTONES INFERIORES (FUNCIONALIDADES CORREGIDAS)
+  // BOTONES INFERIORES (VERSIÓN FINAL CORREGIDA)
   // =============================================
 
-  // 1. COMPARTIR POR WHATSAPP (PDF REAL)
+  // Función para generar PDF (compartida)
+  const generarPDF = () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Configuración
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(14);
+    doc.text("REGISTROS DE GLUCOSA", 105, 15, { align: "center" });
+    
+    // Cabecera
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("FECHA Y HORA", 25, 30);
+    doc.text("NIVEL (mg/dL)", 80, 30);
+    doc.text("NOTAS", 150, 30);
+    doc.setDrawColor(0);
+    doc.line(20, 35, 190, 35);
+    
+    // Contenido
+    doc.setFont("helvetica", "normal");
+    let y = 45;
+    registros.slice().reverse().forEach(reg => {
+      doc.text(new Date(reg.fecha).toLocaleString("es-ES", {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }), 25, y);
+      doc.text(`${reg.resultado} mg/dL`, 80, y);
+      doc.text(reg.notas || "---", 150, y, { maxWidth: 50 });
+      y += 10;
+    });
+    
+    return doc;
+  };
+
+  // 1. COMPARTIR POR WHATSAPP (PDF)
   document.getElementById("compartir-whatsapp").addEventListener("click", async () => {
     if (registros.length === 0) {
       alert("No hay registros para compartir");
@@ -272,78 +310,36 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     try {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      
-      // Configuración del documento
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(16);
-      doc.setTextColor(40, 40, 40);
-      doc.text("📊 Registros de Glucosa", 105, 20, { align: "center" });
-      
-      // Contenido
-      doc.setFontSize(10);
-      let y = 35;
-      registros.slice().reverse().forEach((reg, index) => {
-        doc.text(`${index + 1}.`, 15, y);
-        doc.text(new Date(reg.fecha).toLocaleString("es-ES"), 25, y);
-        doc.text(`${reg.resultado} mg/dL`, 80, y);
-        if (reg.notas) doc.text(reg.notas.substring(0, 40), 110, y);
-        y += 8;
-      });
-
-      // Generar Blob
+      const doc = generarPDF();
       const pdfBlob = doc.output("blob");
-      const pdfFile = new File([pdfBlob], "registros_glucosa.pdf", { type: "application/pdf" });
+      const pdfFile = new File([pdfBlob], "glucosa.pdf", { type: "application/pdf" });
 
-      // Intentar usar Web Share API (móviles)
       if (navigator.share && navigator.canShare?.({ files: [pdfFile] })) {
         await navigator.share({
-          title: "Mis Registros de Glucosa",
+          title: "Registros de Glucosa",
           files: [pdfFile]
         });
       } else {
-        // Fallback para desktop
         const pdfUrl = URL.createObjectURL(pdfBlob);
-        window.open(`https://web.whatsapp.com/send?text=Mis%20Registros%20de%20Glucosa%20(adjunto)&file=${pdfUrl}`, "_blank");
+        window.open(`https://web.whatsapp.com/send?text=Registros%20de%20Glucosa&file=${pdfUrl}`);
       }
     } catch (error) {
-      console.error("Error al compartir:", error);
-      alert("No se pudo compartir. Abre WhatsApp manualmente y adjunta el PDF.");
+      alert("Error al compartir. Abre WhatsApp manualmente y adjunta el PDF.");
     }
   });
 
-  // 2. EXPORTAR DATOS (PDF LEGIBLE)
+  // 2. EXPORTAR DATOS (PDF)
   document.getElementById("exportar-datos").addEventListener("click", () => {
     if (registros.length === 0) {
       alert("No hay registros para exportar");
       return;
     }
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
     
-    // Configuración
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(16);
-    doc.text("Registros de Glucosa", 105, 15, { align: "center" });
-    
-    // Tabla de datos
-    doc.setFontSize(10);
-    let y = 30;
-    registros.forEach((reg, index) => {
-      doc.text(`${index + 1}.`, 10, y);
-      doc.text(new Date(reg.fecha).toLocaleString("es-ES"), 20, y);
-      doc.text(`${reg.resultado} mg/dL`, 80, y);
-      if (reg.notas) doc.text(reg.notas.substring(0, 50), 110, y);
-      y += 8;
-    });
-
-    // Guardar
-    doc.save(`registros_glucosa_${new Date().toLocaleDateString('es-ES')}.pdf`);
+    const doc = generarPDF();
+    doc.save(`Registros_Glucosa_${new Date().toLocaleDateString('es-ES')}.pdf`);
   });
 
-  // 3. IMPORTAR DATOS (CSV FUNCIONAL)
+  // 3. IMPORTAR DATOS (CSV)
   document.getElementById("importar-datos").addEventListener("click", () => {
     document.getElementById("archivo-importar").click();
   });
@@ -363,7 +359,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const nuevosRegistros = [];
 
         lineas.forEach((linea, index) => {
-          // Saltar encabezado si existe
           if (index === 0 && linea.toLowerCase().includes('fecha')) return;
           
           const partes = linea.split(',').map(part => part.trim());
