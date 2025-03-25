@@ -1,61 +1,47 @@
 document.addEventListener("DOMContentLoaded", function() {
-  // Inicialización de Flatpickr (para formulario y recordatorios)
+  // Inicialización original de Flatpickr
   flatpickr("#fecha-hora", {
     enableTime: true,
     dateFormat: "Y-m-d h:i K",
     time_24hr: false
   });
 
-  flatpickr("#fecha-recordatorio", {
-    enableTime: true,
-    dateFormat: "Y-m-d h:i K",
-    time_24hr: false
-  });
+  // [Todas las variables originales...]
 
-  // [Todas las variables del DOM...]
+  // Función original para guardar registros
+  guardarBtn.addEventListener("click", function() {
+    const fechaHora = fechaHoraInput.value;
+    const resultado = parseFloat(glucosaInput.value);
+    const notas = notasInput.value;
 
-  // Modo día/noche (funcionalidad completa)
-  modoNocturnoBtn.addEventListener("click", function() {
-    document.body.classList.toggle("dark-mode");
-    localStorage.setItem("modoNocturno", document.body.classList.contains("dark-mode"));
-    modoNocturnoBtn.textContent = document.body.classList.contains("dark-mode") ? "Modo Día" : "Modo Noche";
-  });
+    if (!fechaHora || isNaN(resultado)) {
+      alert("Complete todos los campos");
+      return;
+    }
 
-  // Función actualizarTabla (nuevo formato)
-  function actualizarTabla() {
-    const cuerpoTabla = document.getElementById("tabla-resultados");
-    cuerpoTabla.innerHTML = "";
-
-    const ultimosRegistros = [...registros].reverse().slice(0, 5);
-
-    ultimosRegistros.forEach(registro => {
-      // Fila principal
-      const fila = document.createElement("tr");
-      fila.innerHTML = `
-        <td>${new Date(registro.fecha).toLocaleString("es-ES", { hour12: true })}</td>
-        <td>${registro.resultado} mg/dL</td>
-        <td>
-          <button class="editar" onclick="editarRegistro(${registros.indexOf(registro)})">Editar</button>
-          <button class="eliminar" onclick="eliminarRegistro(${registros.indexOf(registro)})">Eliminar</button>
-        </td>
-      `;
-      cuerpoTabla.appendChild(fila);
-
-      // Fila de notas
-      const filaNotas = document.createElement("tr");
-      filaNotas.className = "fila-notas";
-      filaNotas.innerHTML = `
-        <td colspan="3">
-          <strong>Notas:</strong> ${registro.notas || "--"}
-        </td>
-      `;
-      cuerpoTabla.appendChild(filaNotas);
+    registros.push({
+      fecha: new Date(fechaHora).toISOString(),
+      resultado: resultado,
+      notas: notas
     });
-  }
 
-  // [Todas las demás funciones permanecen IGUAL]
-  // - Guardar registros
-  // - Recordatorios
-  // - Gráficas
-  // - Exportar/importar
+    localStorage.setItem("registros", JSON.stringify(registros));
+    actualizarTabla();
+  });
+
+  // Función original de recordatorios con alarmas
+  agregarRecordatorioBtn.addEventListener("click", function() {
+    const hora = horaRecordatorioInput.value;
+    if (!hora) return;
+
+    recordatorios.push({
+      hora: hora,
+      disparado: false
+    });
+
+    localStorage.setItem("recordatorios", JSON.stringify(recordatorios));
+    actualizarListaRecordatorios();
+  });
+
+  // [Todas las demás funciones originales...]
 });
