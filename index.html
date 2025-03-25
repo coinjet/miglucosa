@@ -19,6 +19,7 @@
       <p>Registro Diario</p>
     </header>
 
+    <!-- Botón de modo nocturno -->
     <div class="modo-nocturno-container">
       <button id="modo-nocturno">Modo Noche</button>
     </div>
@@ -64,23 +65,41 @@
       <p id="promedio-hba1c">Tu HbA1c estimado es: --%</p>
     </div>
 
-    <!-- Gráfica -->
+    <!-- Gráfica de Glucosa por Mes -->
     <section id="grafica">
       <h2>Gráfica de Glucosa por Mes</h2>
       <label for="mes-seleccionado">Selecciona un Mes:</label>
       <select id="mes-seleccionado">
         <option value="01">Enero</option>
         <option value="02">Febrero</option>
-        <!-- ... otros meses ... -->
+        <option value="03">Marzo</option>
+        <option value="04">Abril</option>
+        <option value="05">Mayo</option>
+        <option value="06">Junio</option>
+        <option value="07">Julio</option>
+        <option value="08">Agosto</option>
+        <option value="09">Septiembre</option>
+        <option value="10">Octubre</option>
+        <option value="11">Noviembre</option>
+        <option value="12">Diciembre</option>
       </select>
       <canvas id="grafica-glucosa"></canvas>
     </section>
 
-    <!-- Botones -->
+    <!-- BOTONES INFERIORES (MANTENIDOS EXACTAMENTE COMO ESTABAN) -->
     <div class="botones-adicionales">
-      <!-- ... botones existentes ... -->
-        </div>
+      <div class="fila-botones">
+        <button id="compartir-whatsapp">Compartir por WhatsApp</button>
+        <button id="compartir-email">Compartir por Email</button>
+        <button id="exportar-datos">Exportar Datos</button>
+      </div>
+      <div class="fila-botones centrada">
+        <button id="importar-datos">Importar Datos</button>
+        <button id="resetear">Eliminar Registros</button>
+      </div>
+    </div>
 
+    <!-- Campo oculto para la selección de archivos -->
     <input type="file" id="archivo-importar" style="display: none;" accept=".json">
   </div>
 
