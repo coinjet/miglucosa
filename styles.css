@@ -1,11 +1,9 @@
-/* Estilos generales */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f9f9f9;
   color: #333;
-  transition: all 0.3s;
 }
 
 .container {
@@ -15,7 +13,6 @@ body {
   background-color: white;
   border: 1px solid #ddd;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  transition: all 0.3s;
 }
 
 /* Modo nocturno */
@@ -29,44 +26,32 @@ body.dark-mode .container {
   border-color: #444;
 }
 
-/* [Todos los demás estilos existentes...] */
+/* [Todos los estilos originales...] */
 
-/* === NUEVO ESTILO TABLA (SOLICITADO) === */
-.tabla-registros {
+/* Tabla original */
+table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
+  margin-top: 20px;
 }
 
-.tabla-registros th, 
-.tabla-registros td {
-  border: 1px solid #ddd;
+th, td {
   padding: 12px;
   text-align: left;
+  border: 1px solid #ddd;
 }
 
-.tabla-registros th {
-  background-color: #62A5ED;
-  color: white;
-}
-
-.tabla-registros tr:nth-child(even) {
+th {
   background-color: #f2f2f2;
 }
 
-/* Notas debajo de cada registro */
-.fila-notas {
-  padding: 12px;
-  border-left: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
+/* Botones originales */
+.botones-adicionales {
+  margin-top: 30px;
 }
 
-/* Modo nocturno para tabla */
-body.dark-mode .tabla-registros th {
-  background-color: #3A73B9;
-}
-
-body.dark-mode .tabla-registros tr:nth-child(even) {
-  background-color: #2d2d2d;
+.fila-botones {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
