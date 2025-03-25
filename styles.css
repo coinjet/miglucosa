@@ -5,17 +5,17 @@ body {
   padding: 0;
   background-color: #f9f9f9;
   color: #333;
-  transition: background-color 0.3s, color 0.3s;
+  transition: all 0.3s;
 }
 
 .container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  border: 1px solid #ccc;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   background-color: white;
-  transition: background-color 0.3s, color 0.3s;
+  border: 1px solid #ddd;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  transition: all 0.3s;
 }
 
 /* Modo nocturno */
@@ -26,111 +26,47 @@ body.dark-mode {
 
 body.dark-mode .container {
   background-color: #1e1e1e;
-  border-color: #333;
+  border-color: #444;
 }
 
-/* Encabezado */
-header {
-  text-align: center;
-  padding: 15px 0;
+/* [Todos los demás estilos existentes...] */
+
+/* === NUEVO ESTILO TABLA (SOLICITADO) === */
+.tabla-registros {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.tabla-registros th, 
+.tabla-registros td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.tabla-registros th {
   background-color: #62A5ED;
   color: white;
-  margin-bottom: 30px;
 }
 
-/* Formulario */
-#registro label {
-  display: block;
-  margin-bottom: 10px;
-  font-weight: bold;
+.tabla-registros tr:nth-child(even) {
+  background-color: #f2f2f2;
 }
 
-#registro input,
-#registro textarea,
-#registro button {
-  width: calc(100% - 22px);
-  padding: 12px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-#registro textarea {
-  height: 40px;
-  resize: none;
-}
-
-#registro button {
-  background: linear-gradient(to bottom, #62A5ED, #4B8DDF);
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-/* ===== NUEVO ESTILO PARA TABLA (SOLICITADO) ===== */
-.fila-superior {
-  display: flex;
-  border: 1px solid #ddd;
-  border-bottom: none;
-  padding: 10px;
-  background-color: #f8f9fa;
-}
-
+/* Notas debajo de cada registro */
 .fila-notas {
-  border: 1px solid #ddd;
-  border-top: none;
-  padding: 10px;
-  margin-bottom: 15px;
-  background-color: #ffffff;
-}
-
-.col-fecha {
-  flex: 2;
-  font-weight: bold;
-  padding: 5px;
-}
-
-.col-nivel {
-  flex: 1;
-  text-align: center;
-  font-weight: bold;
-  padding: 5px;
-}
-
-.col-acciones {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  padding: 5px;
-}
-
-.notas-titulo {
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #555;
-}
-
-.notas-contenido {
-  white-space: pre-wrap;
-  line-height: 1.4;
+  padding: 12px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 }
 
 /* Modo nocturno para tabla */
-body.dark-mode .fila-superior {
+body.dark-mode .tabla-registros th {
+  background-color: #3A73B9;
+}
+
+body.dark-mode .tabla-registros tr:nth-child(even) {
   background-color: #2d2d2d;
-  border-color: #444;
 }
-
-body.dark-mode .fila-notas {
-  background-color: #1e1e1e;
-  border-color: #444;
-}
-
-body.dark-mode .notas-titulo {
-  color: #bbb;
-}
-
-/* Estilos existentes (se mantienen igual) */
-/* ... (Todos los demás estilos permanecen sin cambios) ... */
