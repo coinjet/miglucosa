@@ -1,6 +1,4 @@
-/* styles.css - Versión corregida (solo cambios en tabla) */
-
-/* ========== ESTILOS GENERALES (SIN CAMBIOS) ========== */
+/* styles.css - Versión ajustada para la tabla */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -20,7 +18,7 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* ========== MODO NOCTURNO (SIN CAMBIOS) ========== */
+/* MODO NOCTURNO */
 body.dark-mode {
   background-color: #121212;
   color: #e0e0e0;
@@ -31,7 +29,7 @@ body.dark-mode .container {
   border-color: #333;
 }
 
-/* ========== ENCABEZADO (SIN CAMBIOS) ========== */
+/* ENCABEZADO */
 header {
   text-align: center;
   padding: 15px 0;
@@ -51,7 +49,7 @@ header p {
   margin: 5px 0 0;
 }
 
-/* ========== BOTÓN MODO NOCTURNO (SIN CAMBIOS) ========== */
+/* BOTÓN MODO NOCTURNO */
 .modo-nocturno-container {
   display: flex;
   justify-content: flex-end;
@@ -78,7 +76,7 @@ header p {
   transform: scale(0.98);
 }
 
-/* ========== FORMULARIO (SIN CAMBIOS) ========== */
+/* FORMULARIO */
 #registro label {
   display: block;
   margin-bottom: 10px;
@@ -128,7 +126,7 @@ header p {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* ========== TABLA DE REGISTROS (ÚNICO CAMBIO SOLICITADO) ========== */
+/* TABLA DE REGISTROS (AJUSTE SOLICITADO) */
 .tabla-registros {
   width: 100%;
   border: 1px solid #ddd;
@@ -139,6 +137,7 @@ header p {
 
 .fila {
   display: flex;
+  flex-wrap: wrap;
   border-bottom: 1px solid #ddd;
 }
 
@@ -156,10 +155,26 @@ header p {
   flex: 1;
   padding: 12px;
   text-align: center;
+  min-width: 120px;
 }
 
 .cuerpo-tabla .fila:nth-child(even) {
   background-color: #f9f9f9;
+}
+
+.notas-registro {
+  width: 100%;
+  padding: 8px 12px;
+  border-top: 1px dashed #ddd;
+  font-size: 14px;
+  color: #666;
+  background-color: #f9f9f9;
+}
+
+body.dark-mode .notas-registro {
+  border-top-color: #444;
+  color: #e0e0e0;
+  background-color: #2d2d2d;
 }
 
 /* Botones de acción en tabla */
@@ -182,7 +197,7 @@ header p {
   cursor: pointer;
 }
 
-/* ========== BOTONES INFERIORES (RESTAURADOS EXACTAMENTE COMO ESTABAN) ========== */
+/* BOTONES INFERIORES */
 .botones-adicionales {
   margin-top: 30px;
 }
@@ -219,7 +234,7 @@ header p {
   transform: scale(0.98);
 }
 
-/* Botón Eliminar Registros (especial) */
+/* Botón Eliminar Registros */
 .botones-adicionales button#resetear {
   background: linear-gradient(to bottom, #FFB41B, #E69A00);
 }
@@ -228,7 +243,7 @@ header p {
   background: linear-gradient(to bottom, #E69A00, #CC8500);
 }
 
-/* ========== PROMEDIO HbA1c (SIN CAMBIOS) ========== */
+/* PROMEDIO HbA1c */
 #promedio-hba1c-container {
   margin-top: 30px;
   padding: 20px;
@@ -253,12 +268,12 @@ body.dark-mode #promedio-hba1c {
   color: #e0e0e0;
 }
 
-/* ========== GRÁFICA (SIN CAMBIOS) ========== */
+/* GRÁFICA */
 #grafica {
   margin-top: 30px;
 }
 
-/* ========== RECORDATORIOS (SIN CAMBIOS) ========== */
+/* RECORDATORIOS */
 #recordatorios {
   margin-top: 20px;
 }
@@ -291,7 +306,7 @@ body.dark-mode #lista-recordatorios li {
   cursor: pointer;
 }
 
-/* ========== MODO NOCTURNO PARA TABLA ========== */
+/* MODO NOCTURNO PARA TABLA */
 body.dark-mode .tabla-registros {
   border-color: #444;
 }
