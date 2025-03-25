@@ -261,103 +261,133 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // =============================================
-  // BOTONES INFERIORES (MODIFICADO SOLO WHATSAPP)
+  // BOTONES INFERIORES (FUNCIONALIDADES CORREGIDAS)
   // =============================================
 
-  // 1. COMPARTIR POR WHATSAPP (PDF)
-  document.getElementById("compartir-whatsapp").addEventListener("click", () => {
+  // 1. COMPARTIR POR WHATSAPP (PDF REAL)
+  document.getElementById("compartir-whatsapp").addEventListener("click", async () => {
     if (registros.length === 0) {
       alert("No hay registros para compartir");
       return;
     }
-    
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.text("Registros de Glucosa", 105, 15, { align: "center" });
-    
-    doc.setFontSize(12);
-    let y = 30;
-    registros.forEach(reg => {
-      doc.text(`📅 ${new Date(reg.fecha).toLocaleString("es-ES")}`, 10, y);
-      doc.text(`🔢 ${reg.resultado} mg/dL`, 70, y);
-      if (reg.notas) doc.text(`📝 ${reg.notas}`, 110, y);
-      y += 10;
-    });
-    
-    const pdfBlob = doc.output("blob");
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    window.open(`https://wa.me/?text=📊 Mis Registros de Glucosa (adjunto PDF)&attachment=${encodeURIComponent(pdfUrl)}`);
-  });
 
-  // 2. COMPARTIR POR EMAIL (SIN CAMBIOS)
-  document.getElementById("compartir-email").addEventListener("click", () => {
-    if (registros.length === 0) {
-      alert("No hay registros para compartir");
-      return;
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Configuración del documento
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(16);
+      doc.setTextColor(40, 40, 40);
+      doc.text("📊 Registros de Glucosa", 105, 20, { align: "center" });
+      
+      // Contenido
+      doc.setFontSize(10);
+      let y = 35;
+      registros.slice().reverse().forEach((reg, index) => {
+        doc.text(`${index + 1}.`, 15, y);
+        doc.text(new Date(reg.fecha).toLocaleString("es-ES"), 25, y);
+        doc.text(`${reg.resultado} mg/dL`, 80, y);
+        if (reg.notas) doc.text(reg.notas.substring(0, 40), 110, y);
+        y += 8;
+      });
+
+      // Generar Blob
+      const pdfBlob = doc.output("blob");
+      const pdfFile = new File([pdfBlob], "registros_glucosa.pdf", { type: "application/pdf" });
+
+      // Intentar usar Web Share API (móviles)
+      if (navigator.share && navigator.canShare?.({ files: [pdfFile] })) {
+        await navigator.share({
+          title: "Mis Registros de Glucosa",
+          files: [pdfFile]
+        });
+      } else {
+        // Fallback para desktop
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        window.open(`https://web.whatsapp.com/send?text=Mis%20Registros%20de%20Glucosa%20(adjunto)&file=${pdfUrl}`, "_blank");
+      }
+    } catch (error) {
+      console.error("Error al compartir:", error);
+      alert("No se pudo compartir. Abre WhatsApp manualmente y adjunta el PDF.");
     }
-    const asunto = "Mis Registros de Glucosa";
-    const cuerpo = registros
-      .map(reg => `📅 ${new Date(reg.fecha).toLocaleString("es-ES")} - 🔢 ${reg.resultado} mg/dL${reg.notas ? ` - 📝 ${reg.notas}` : ""}`)
-      .join("\n");
-    window.open(`mailto:?subject=${asunto}&body=${encodeURIComponent(cuerpo)}`);
   });
 
-  // 3. EXPORTAR DATOS (PDF) (SIN CAMBIOS)
+  // 2. EXPORTAR DATOS (PDF LEGIBLE)
   document.getElementById("exportar-datos").addEventListener("click", () => {
     if (registros.length === 0) {
       alert("No hay registros para exportar");
       return;
     }
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
-    doc.setFontSize(18);
+    // Configuración
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(16);
     doc.text("Registros de Glucosa", 105, 15, { align: "center" });
     
-    doc.setFontSize(12);
+    // Tabla de datos
+    doc.setFontSize(10);
     let y = 30;
-    registros.forEach(reg => {
-      doc.text(`📅 ${new Date(reg.fecha).toLocaleString("es-ES")}`, 10, y);
-      doc.text(`🔢 ${reg.resultado} mg/dL`, 70, y);
-      if (reg.notas) doc.text(`📝 ${reg.notas}`, 110, y);
-      y += 10;
+    registros.forEach((reg, index) => {
+      doc.text(`${index + 1}.`, 10, y);
+      doc.text(new Date(reg.fecha).toLocaleString("es-ES"), 20, y);
+      doc.text(`${reg.resultado} mg/dL`, 80, y);
+      if (reg.notas) doc.text(reg.notas.substring(0, 50), 110, y);
+      y += 8;
     });
-    
-    doc.save(`registros-glucosa_${new Date().toISOString().slice(0, 10)}.pdf`);
+
+    // Guardar
+    doc.save(`registros_glucosa_${new Date().toLocaleDateString('es-ES')}.pdf`);
   });
 
-  // 4. IMPORTAR DATOS (CSV o PDF) (SIN CAMBIOS)
+  // 3. IMPORTAR DATOS (CSV FUNCIONAL)
+  document.getElementById("importar-datos").addEventListener("click", () => {
+    document.getElementById("archivo-importar").click();
+  });
+
   document.getElementById("archivo-importar").addEventListener("change", (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file || !file.name.endsWith('.csv')) {
+      alert("Por favor, selecciona un archivo CSV válido");
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
-        if (file.name.endsWith(".csv")) {
-          const csvData = event.target.result;
-          const lines = csvData.split("\n");
-          const nuevosRegistros = [];
-          lines.forEach(line => {
-            const [fecha, resultado, notas] = line.split(",");
-            if (fecha && resultado && !isNaN(parseFloat(resultado))) {
+        const csvData = event.target.result;
+        const lineas = csvData.split('\n').filter(line => line.trim() !== '');
+        const nuevosRegistros = [];
+
+        lineas.forEach((linea, index) => {
+          // Saltar encabezado si existe
+          if (index === 0 && linea.toLowerCase().includes('fecha')) return;
+          
+          const partes = linea.split(',').map(part => part.trim());
+          if (partes.length >= 2) {
+            const fecha = new Date(partes[0]);
+            const valor = parseFloat(partes[1]);
+            
+            if (!isNaN(fecha.getTime()) && !isNaN(valor)) {
               nuevosRegistros.push({
-                fecha: new Date(fecha.trim()).toISOString(),
-                resultado: parseFloat(resultado.trim()),
-                notas: notas?.trim() || null
+                fecha: fecha.toISOString(),
+                resultado: valor,
+                notas: partes[2] || null
               });
             }
-          });
+          }
+        });
+
+        if (nuevosRegistros.length > 0) {
           registros = nuevosRegistros;
           localStorage.setItem("registros", JSON.stringify(registros));
           actualizarTabla();
-          alert(`Se importaron ${nuevosRegistros.length} registros desde CSV`);
-        }
-        else if (file.name.endsWith(".pdf")) {
-          alert("Importación de PDF detectada. Nota: Esta funcionalidad requiere una librería adicional (ej: pdf-lib) para un parsing preciso. Actualmente solo soporta CSV.");
+          alert(`Se importaron ${nuevosRegistros.length} registros correctamente`);
         } else {
-          alert("Formato no soportado. Use CSV o PDF.");
+          alert("El archivo no contiene datos válidos. Formato esperado:\nFecha, Valor, Notas(opcional)");
         }
       } catch (error) {
         alert("Error al importar: " + error.message);
@@ -366,7 +396,7 @@ document.addEventListener("DOMContentLoaded", function() {
     reader.readAsText(file);
   });
 
-  // 5. ELIMINAR REGISTROS (CON CONFIRMACIÓN) (SIN CAMBIOS)
+  // 4. ELIMINAR REGISTROS (CON CONFIRMACIÓN)
   document.getElementById("resetear").addEventListener("click", () => {
     const modal = document.createElement("div");
     modal.style.cssText = `
