@@ -252,7 +252,7 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // =============================================
-  // BOTONES INFERIORES (VERSIÓN PWA OPTIMIZADA)
+  // BOTONES INFERIORES (VERSIÓN FINAL CORREGIDA)
   // =============================================
 
   const generarPDF = () => {
@@ -317,7 +317,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  // 2. COMPARTIR POR EMAIL (OPTIMIZADO PWA)
+  // 2. COMPARTIR POR EMAIL (VERSIÓN DEFINITIVA)
   document.getElementById("compartir-email").addEventListener("click", async () => {
     if (registros.length === 0) {
       alert("No hay registros para compartir");
@@ -326,21 +326,23 @@ document.addEventListener("DOMContentLoaded", function() {
 
     try {
       const doc = generarPDF();
+      // Generar PDF como Blob (método más confiable)
       const pdfBlob = doc.output("blob");
       const pdfFile = new File([pdfBlob], "Registro_Glucosa.pdf", {
         type: "application/pdf"
       });
 
-      // Método preferido para PWAs (Android/iOS)
+      // Solución para PWAs (Android/iOS)
       if (navigator.share && navigator.canShare?.({ files: [pdfFile] })) {
         await navigator.share({
           title: "Registro de Glucosa",
-          text: "Mis registros de glucosa",
+          text: "Adjunto mis registros de glucosa",
           files: [pdfFile]
         });
-      }
-      // Fallback para navegadores sin soporte completo
+      } 
+      // Fallback universal
       else {
+        // Descargar primero el PDF
         const pdfUrl = URL.createObjectURL(pdfBlob);
         const link = document.createElement("a");
         link.href = pdfUrl;
@@ -348,14 +350,15 @@ document.addEventListener("DOMContentLoaded", function() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-
+        
+        // Abrir cliente de correo
         setTimeout(() => {
-          window.open("mailto:?subject=Registro%20de%20Glucosa&body=Adjunta%20el%20PDF%20descargado");
-        }, 300);
+          window.open("mailto:?subject=Registro%20de%20Glucosa&body=Por%20favor%20adjunta%20el%20PDF%20descargado");
+        }, 500);
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("Descarga el PDF y adjúntalo manualmente en tu correo.");
+      console.error("Error al compartir:", error);
+      alert("Descarga el PDF y adjúntalo manualmente desde tu app de correo.");
     }
   });
 
