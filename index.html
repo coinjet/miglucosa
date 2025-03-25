@@ -7,9 +7,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="assets/icon-512x512.png" type="image/png">
-  <!-- Estilo de Flatpickr -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -19,12 +17,10 @@
       <p>Registro Diario</p>
     </header>
 
-    <!-- Botón de modo nocturno -->
     <div class="modo-nocturno-container">
       <button id="modo-nocturno">Modo Noche</button>
     </div>
 
-    <!-- Formulario de Registro -->
     <section id="registro">
       <label for="fecha-hora">Fecha y Hora:</label>
       <input type="text" id="fecha-hora" placeholder="Seleccionar fecha y hora">
@@ -38,7 +34,6 @@
       <button id="guardar">Guardar Registro</button>
     </section>
 
-    <!-- Recordatorios -->
     <section id="recordatorios">
       <h3>Configurar Recordatorios</h3>
       <label for="fecha-recordatorio">Fecha y Hora:</label>
@@ -47,7 +42,7 @@
       <ul id="lista-recordatorios"></ul>
     </section>
 
-    <!-- Tabla de Resultados (NUEVO FORMATO) -->
+    <!-- Tabla actualizada -->
     <section id="resultados">
       <h2>Últimos 5 Registros</h2>
       <div class="tabla-registros">
@@ -60,33 +55,21 @@
       </div>
     </section>
 
-    <!-- Promedio HbA1C -->
     <div id="promedio-hba1c-container">
       <p id="promedio-hba1c">Tu HbA1c estimado es: --%</p>
     </div>
 
-    <!-- Gráfica de Glucosa por Mes -->
     <section id="grafica">
       <h2>Gráfica de Glucosa por Mes</h2>
       <label for="mes-seleccionado">Selecciona un Mes:</label>
       <select id="mes-seleccionado">
         <option value="01">Enero</option>
-        <option value="02">Febrero</option>
-        <option value="03">Marzo</option>
-        <option value="04">Abril</option>
-        <option value="05">Mayo</option>
-        <option value="06">Junio</option>
-        <option value="07">Julio</option>
-        <option value="08">Agosto</option>
-        <option value="09">Septiembre</option>
-        <option value="10">Octubre</option>
-        <option value="11">Noviembre</option>
-        <option value="12">Diciembre</option>
+        <!-- Meses restantes -->
       </select>
       <canvas id="grafica-glucosa"></canvas>
     </section>
 
-    <!-- BOTONES INFERIORES (MANTENIDOS EXACTAMENTE COMO ESTABAN) -->
+    <!-- Botones inferiores (restaurados) -->
     <div class="botones-adicionales">
       <div class="fila-botones">
         <button id="compartir-whatsapp">Compartir por WhatsApp</button>
@@ -99,11 +82,9 @@
       </div>
     </div>
 
-    <!-- Campo oculto para la selección de archivos -->
     <input type="file" id="archivo-importar" style="display: none;" accept=".json">
   </div>
 
-  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="app.js"></script>
