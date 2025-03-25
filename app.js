@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function() {
           <button class="editar" onclick="editarRegistro(${registros.length - 1 - index})">Editar</button>
           <button class="eliminar" onclick="eliminarRegistro(${registros.length - 1 - index})">Eliminar</button>
         </div>
-        <div class="notas-registro">${registro.notas ? `<strong>Notas:</strong> ${registro.notas}` : "---"}</div>
+        <div class="notas-registro">${registro.notas ? `<strong>Notas:</strong> ${registro.notas}` : "—"}</div>
       `;
       tablaResultados.appendChild(fila);
     });
@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function calcularPromedioHbA1c() {
     if (registros.length === 0) {
-      promedioHbA1c.textContent = "Tu HbA1c estimado es: --%";
+      promedioHbA1c.textContent = "Tu HbA1c estimado es: —%";
       return;
     }
     const suma = registros.reduce((acc, reg) => acc + reg.resultado, 0);
@@ -272,9 +272,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // Configuración
     doc.setFont("helvetica", "normal");
     doc.setFontSize(14);
-    doc.text("REGISTROS DE GLUCOSA", 105, 15, { align: "center" });
+    doc.text("REGISTRO DE GLUCOSA", 105, 15, { align: "center" });
     
-    // Cabecera
+    // Cabecera de tabla
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.text("FECHA Y HORA", 25, 30);
@@ -295,7 +295,7 @@ document.addEventListener("DOMContentLoaded", function() {
         minute: '2-digit'
       }), 25, y);
       doc.text(`${reg.resultado} mg/dL`, 80, y);
-      doc.text(reg.notas || "---", 150, y, { maxWidth: 50 });
+      doc.text(reg.notas || "—", 150, y, { maxWidth: 50 });
       y += 10;
     });
     
@@ -316,19 +316,43 @@ document.addEventListener("DOMContentLoaded", function() {
 
       if (navigator.share && navigator.canShare?.({ files: [pdfFile] })) {
         await navigator.share({
-          title: "Registros de Glucosa",
+          title: "Registro de Glucosa",
           files: [pdfFile]
         });
       } else {
         const pdfUrl = URL.createObjectURL(pdfBlob);
-        window.open(`https://web.whatsapp.com/send?text=Registros%20de%20Glucosa&file=${pdfUrl}`);
+        window.open(`https://web.whatsapp.com/send?text=Registro%20de%20Glucosa&file=${pdfUrl}`);
       }
     } catch (error) {
       alert("Error al compartir. Abre WhatsApp manualmente y adjunta el PDF.");
     }
   });
 
-  // 2. EXPORTAR DATOS (PDF)
+  // 2. COMPARTIR POR EMAIL (PDF) - VERSIÓN CORREGIDA
+  document.getElementById("compartir-email").addEventListener("click", () => {
+    if (registros.length === 0) {
+      alert("No hay registros para compartir");
+      return;
+    }
+
+    const doc = generarPDF();
+    const pdfDataUri = doc.output("datauristring");
+    
+    // Crear enlace temporal
+    const link = document.createElement("a");
+    link.href = pdfDataUri;
+    link.download = "Registro_de_Glucosa.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Abrir cliente de correo
+    setTimeout(() => {
+      window.open("mailto:?subject=Registro%20de%20Glucosa&body=Adjunto%20mis%20registros%20de%20glucosa");
+    }, 500);
+  });
+
+  // 3. EXPORTAR DATOS (PDF)
   document.getElementById("exportar-datos").addEventListener("click", () => {
     if (registros.length === 0) {
       alert("No hay registros para exportar");
@@ -336,10 +360,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     const doc = generarPDF();
-    doc.save(`Registros_Glucosa_${new Date().toLocaleDateString('es-ES')}.pdf`);
+    doc.save("Registro_de_Glucosa.pdf");
   });
 
-  // 3. IMPORTAR DATOS (CSV)
+  // 4. IMPORTAR DATOS (CSV)
   document.getElementById("importar-datos").addEventListener("click", () => {
     document.getElementById("archivo-importar").click();
   });
@@ -391,7 +415,7 @@ document.addEventListener("DOMContentLoaded", function() {
     reader.readAsText(file);
   });
 
-  // 4. ELIMINAR REGISTROS (CON CONFIRMACIÓN)
+  // 5. ELIMINAR REGISTROS (CON CONFIRMACIÓN)
   document.getElementById("resetear").addEventListener("click", () => {
     const modal = document.createElement("div");
     modal.style.cssText = `
