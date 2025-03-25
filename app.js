@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function() {
   let chartInstance = null;
 
   // =============================================
-  // 1. CORRECCIÓN MODO DÍA/NOCHE (SOLICITADO)
+  // 1. MODO DÍA/NOCHE
   // =============================================
   modoNocturnoBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   // =============================================
-  // 2. CORRECCIÓN RECORDATORIOS (SOLICITADO)
+  // 2. RECORDATORIOS
   // =============================================
   // Inicializar Flatpickr para recordatorios
   flatpickr("#fecha-recordatorio", {
@@ -155,25 +155,25 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // =============================================
-  // FUNCIONES EXISTENTES (NO MODIFICADAS)
+  // FUNCIONES PRINCIPALES
   // =============================================
   function actualizarTabla() {
     tablaResultados.innerHTML = "";
-    registros.forEach((registro, index) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${new Date(registro.fecha).toLocaleString("es-ES", { hour12: true })}</td>
-        <td>${registro.resultado} mg/dL</td>
-        <td>${registro.notas || "--"}</td>
-        <td>
-          <button class="editar" onclick="editarRegistro(${index})">Editar</button>
-          <button class="eliminar" onclick="eliminarRegistro(${index})">Eliminar</button>
-        </td>
+    registros.slice(-5).reverse().forEach((registro, index) => {
+      const fila = document.createElement("div");
+      fila.className = "fila";
+      fila.innerHTML = `
+        <div class="columna">${new Date(registro.fecha).toLocaleString("es-ES", { hour12: true })}</div>
+        <div class="columna">${registro.resultado} mg/dL</div>
+        <div class="columna">
+          <button class="editar" onclick="editarRegistro(${registros.length - 1 - index})">Editar</button>
+          <button class="eliminar" onclick="eliminarRegistro(${registros.length - 1 - index})">Eliminar</button>
+        </div>
+        <div class="notas-registro">${registro.notas ? `<strong>Notas:</strong> ${registro.notas}` : "---"}</div>
       `;
-      tablaResultados.appendChild(row);
+      tablaResultados.appendChild(fila);
     });
     calcularPromedioHbA1c();
-    actualizarGrafica();
   }
 
   function calcularPromedioHbA1c() {
@@ -233,6 +233,81 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
   }
+
+  // Guardar nuevo registro
+  guardarBtn.addEventListener("click", () => {
+    const fechaHora = fechaHoraInput.value;
+    const glucosa = parseFloat(glucosaInput.value);
+    const notas = notasInput.value.trim();
+
+    if (!fechaHora || isNaN(glucosa)) {
+      alert("Por favor, ingresa fecha/hora y un nivel de glucosa válido");
+      return;
+    }
+
+    registros.push({
+      fecha: new Date(fechaHora).toISOString(),
+      resultado: glucosa,
+      notas: notas || null
+    });
+    localStorage.setItem("registros", JSON.stringify(registros));
+
+    // Limpiar campos
+    glucosaInput.value = "";
+    notasInput.value = "";
+    flatpickr("#fecha-hora").setDate(new Date());
+
+    actualizarTabla();
+  });
+
+  // Resetear registros
+  resetearBtn.addEventListener("click", () => {
+    if (confirm("¿Estás seguro de eliminar TODOS los registros?")) {
+      registros = [];
+      localStorage.setItem("registros", JSON.stringify(registros));
+      actualizarTabla();
+    }
+  });
+
+  // Exportar datos
+  exportarDatosBtn.addEventListener("click", () => {
+    const dataStr = JSON.stringify(registros, null, 2);
+    const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
+    const exportName = `registros-glucosa_${new Date().toISOString().slice(0, 10)}.json`;
+
+    const linkElement = document.createElement("a");
+    linkElement.setAttribute("href", dataUri);
+    linkElement.setAttribute("download", exportName);
+    linkElement.click();
+  });
+
+  // Importar datos
+  document.getElementById("importar-datos").addEventListener("click", () => {
+    document.getElementById("archivo-importar").click();
+  });
+
+  document.getElementById("archivo-importar").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result);
+        if (Array.isArray(data)) {
+          registros = data;
+          localStorage.setItem("registros", JSON.stringify(registros));
+          actualizarTabla();
+          alert(`Se importaron ${data.length} registros correctamente`);
+        } else {
+          alert("El archivo no contiene datos válidos");
+        }
+      } catch (error) {
+        alert("Error al leer el archivo: " + error.message);
+      }
+    };
+    reader.readAsText(file);
+  });
 
   // Inicialización
   actualizarTabla();
