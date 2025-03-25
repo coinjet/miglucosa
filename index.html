@@ -19,7 +19,7 @@
       <p>Registro Diario</p>
     </header>
 
-    <!-- Botón de modo nocturno debajo del banner -->
+    <!-- Botón de modo nocturno -->
     <div class="modo-nocturno-container">
       <button id="modo-nocturno">Modo Noche</button>
     </div>
@@ -38,16 +38,14 @@
       <button id="guardar">Guardar Registro</button>
     </section>
 
-    <!-- Recordatorios -->
+    <!-- Recordatorios (SECCIÓN MODIFICADA) -->
     <section id="recordatorios">
       <h3>Configurar Recordatorios</h3>
-      <label for="hora-recordatorio">Hora:</label>
-      <input type="time" id="hora-recordatorio" required>
+      <label for="fecha-recordatorio">Fecha y Hora:</label>
+      <input type="text" id="fecha-recordatorio" placeholder="Seleccionar fecha y hora">
       <button id="agregar-recordatorio">Agregar Recordatorio</button>
+      <ul id="lista-recordatorios"></ul>
     </section>
-
-    <!-- Lista de recordatorios -->
-    <ul id="lista-recordatorios"></ul>
 
     <!-- Tabla de Resultados -->
     <section id="resultados">
