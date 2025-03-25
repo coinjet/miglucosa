@@ -47,7 +47,6 @@ document.addEventListener("DOMContentLoaded", function() {
   // =============================================
   // 2. RECORDATORIOS
   // =============================================
-  // Inicializar Flatpickr para recordatorios
   flatpickr("#fecha-recordatorio", {
     enableTime: true,
     dateFormat: "Y-m-d h:i K",
@@ -55,7 +54,6 @@ document.addEventListener("DOMContentLoaded", function() {
     minuteIncrement: 5
   });
 
-  // Función para mostrar alarma
   function mostrarAlarma() {
     const modal = document.createElement("div");
     modal.style.cssText = `
@@ -93,19 +91,16 @@ document.addEventListener("DOMContentLoaded", function() {
     `;
     document.body.appendChild(modal);
 
-    // Sonido de alarma
     const audio = new Audio("./assets/alarm.mp3");
     audio.loop = true;
     audio.play().catch(e => console.error("Error al reproducir:", e));
 
-    // Cerrar modal
     document.getElementById("aceptar-alarma").addEventListener("click", () => {
       audio.pause();
       document.body.removeChild(modal);
     });
   }
 
-  // Verificar recordatorios cada 30 segundos
   setInterval(() => {
     const ahora = new Date();
     recordatorios.forEach(recordatorio => {
@@ -118,7 +113,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }, 30000);
 
-  // Actualizar lista de recordatorios
   function actualizarListaRecordatorios() {
     listaRecordatorios.innerHTML = "";
     recordatorios.forEach((recordatorio, index) => {
@@ -140,7 +134,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Agregar recordatorio
   agregarRecordatorioBtn.addEventListener("click", () => {
     const fechaHora = fechaRecordatorioInput.value;
     if (!fechaHora) return alert("Selecciona una fecha y hora");
@@ -234,7 +227,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Guardar nuevo registro
   guardarBtn.addEventListener("click", () => {
     const fechaHora = fechaHoraInput.value;
     const glucosa = parseFloat(glucosaInput.value);
@@ -252,7 +244,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     localStorage.setItem("registros", JSON.stringify(registros));
 
-    // Limpiar campos
     glucosaInput.value = "";
     notasInput.value = "";
     flatpickr("#fecha-hora").setDate(new Date());
@@ -261,20 +252,17 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // =============================================
-  // BOTONES INFERIORES (VERSIÓN FINAL CORREGIDA)
+  // BOTONES INFERIORES (VERSIÓN PWA OPTIMIZADA)
   // =============================================
 
-  // Función para generar PDF (compartida)
   const generarPDF = () => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
-    // Configuración
     doc.setFont("helvetica", "normal");
     doc.setFontSize(14);
     doc.text("REGISTRO DE GLUCOSA", 105, 15, { align: "center" });
     
-    // Cabecera de tabla
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.text("FECHA Y HORA", 25, 30);
@@ -283,7 +271,6 @@ document.addEventListener("DOMContentLoaded", function() {
     doc.setDrawColor(0);
     doc.line(20, 35, 190, 35);
     
-    // Contenido
     doc.setFont("helvetica", "normal");
     let y = 45;
     registros.slice().reverse().forEach(reg => {
@@ -302,7 +289,7 @@ document.addEventListener("DOMContentLoaded", function() {
     return doc;
   };
 
-  // 1. COMPARTIR POR WHATSAPP (PDF)
+  // 1. COMPARTIR POR WHATSAPP
   document.getElementById("compartir-whatsapp").addEventListener("click", async () => {
     if (registros.length === 0) {
       alert("No hay registros para compartir");
@@ -312,7 +299,9 @@ document.addEventListener("DOMContentLoaded", function() {
     try {
       const doc = generarPDF();
       const pdfBlob = doc.output("blob");
-      const pdfFile = new File([pdfBlob], "glucosa.pdf", { type: "application/pdf" });
+      const pdfFile = new File([pdfBlob], "Registro_Glucosa.pdf", { 
+        type: "application/pdf" 
+      });
 
       if (navigator.share && navigator.canShare?.({ files: [pdfFile] })) {
         await navigator.share({
@@ -324,35 +313,53 @@ document.addEventListener("DOMContentLoaded", function() {
         window.open(`https://web.whatsapp.com/send?text=Registro%20de%20Glucosa&file=${pdfUrl}`);
       }
     } catch (error) {
-      alert("Error al compartir. Abre WhatsApp manualmente y adjunta el PDF.");
+      alert("Error al compartir. Abre WhatsApp manualmente.");
     }
   });
 
-  // 2. COMPARTIR POR EMAIL (PDF) - VERSIÓN CORREGIDA
-  document.getElementById("compartir-email").addEventListener("click", () => {
+  // 2. COMPARTIR POR EMAIL (OPTIMIZADO PWA)
+  document.getElementById("compartir-email").addEventListener("click", async () => {
     if (registros.length === 0) {
       alert("No hay registros para compartir");
       return;
     }
 
-    const doc = generarPDF();
-    const pdfDataUri = doc.output("datauristring");
-    
-    // Crear enlace temporal
-    const link = document.createElement("a");
-    link.href = pdfDataUri;
-    link.download = "Registro_de_Glucosa.pdf";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Abrir cliente de correo
-    setTimeout(() => {
-      window.open("mailto:?subject=Registro%20de%20Glucosa&body=Adjunto%20mis%20registros%20de%20glucosa");
-    }, 500);
+    try {
+      const doc = generarPDF();
+      const pdfBlob = doc.output("blob");
+      const pdfFile = new File([pdfBlob], "Registro_Glucosa.pdf", {
+        type: "application/pdf"
+      });
+
+      // Método preferido para PWAs (Android/iOS)
+      if (navigator.share && navigator.canShare?.({ files: [pdfFile] })) {
+        await navigator.share({
+          title: "Registro de Glucosa",
+          text: "Mis registros de glucosa",
+          files: [pdfFile]
+        });
+      }
+      // Fallback para navegadores sin soporte completo
+      else {
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "Registro_Glucosa.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        setTimeout(() => {
+          window.open("mailto:?subject=Registro%20de%20Glucosa&body=Adjunta%20el%20PDF%20descargado");
+        }, 300);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Descarga el PDF y adjúntalo manualmente en tu correo.");
+    }
   });
 
-  // 3. EXPORTAR DATOS (PDF)
+  // 3. EXPORTAR DATOS
   document.getElementById("exportar-datos").addEventListener("click", () => {
     if (registros.length === 0) {
       alert("No hay registros para exportar");
@@ -363,7 +370,7 @@ document.addEventListener("DOMContentLoaded", function() {
     doc.save("Registro_de_Glucosa.pdf");
   });
 
-  // 4. IMPORTAR DATOS (CSV)
+  // 4. IMPORTAR DATOS
   document.getElementById("importar-datos").addEventListener("click", () => {
     document.getElementById("archivo-importar").click();
   });
@@ -415,7 +422,7 @@ document.addEventListener("DOMContentLoaded", function() {
     reader.readAsText(file);
   });
 
-  // 5. ELIMINAR REGISTROS (CON CONFIRMACIÓN)
+  // 5. ELIMINAR REGISTROS
   document.getElementById("resetear").addEventListener("click", () => {
     const modal = document.createElement("div");
     modal.style.cssText = `
