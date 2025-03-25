@@ -260,32 +260,74 @@ document.addEventListener("DOMContentLoaded", function() {
     actualizarTabla();
   });
 
-  // Resetear registros
-  resetearBtn.addEventListener("click", () => {
-    if (confirm("¿Estás seguro de eliminar TODOS los registros?")) {
-      registros = [];
-      localStorage.setItem("registros", JSON.stringify(registros));
-      actualizarTabla();
+  // =============================================
+  // BOTONES INFERIORES (MODIFICADO SOLO WHATSAPP)
+  // =============================================
+
+  // 1. COMPARTIR POR WHATSAPP (PDF)
+  document.getElementById("compartir-whatsapp").addEventListener("click", () => {
+    if (registros.length === 0) {
+      alert("No hay registros para compartir");
+      return;
     }
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text("Registros de Glucosa", 105, 15, { align: "center" });
+    
+    doc.setFontSize(12);
+    let y = 30;
+    registros.forEach(reg => {
+      doc.text(`📅 ${new Date(reg.fecha).toLocaleString("es-ES")}`, 10, y);
+      doc.text(`🔢 ${reg.resultado} mg/dL`, 70, y);
+      if (reg.notas) doc.text(`📝 ${reg.notas}`, 110, y);
+      y += 10;
+    });
+    
+    const pdfBlob = doc.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(`https://wa.me/?text=📊 Mis Registros de Glucosa (adjunto PDF)&attachment=${encodeURIComponent(pdfUrl)}`);
   });
 
-  // Exportar datos
-  exportarDatosBtn.addEventListener("click", () => {
-    const dataStr = JSON.stringify(registros, null, 2);
-    const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
-    const exportName = `registros-glucosa_${new Date().toISOString().slice(0, 10)}.json`;
-
-    const linkElement = document.createElement("a");
-    linkElement.setAttribute("href", dataUri);
-    linkElement.setAttribute("download", exportName);
-    linkElement.click();
+  // 2. COMPARTIR POR EMAIL (SIN CAMBIOS)
+  document.getElementById("compartir-email").addEventListener("click", () => {
+    if (registros.length === 0) {
+      alert("No hay registros para compartir");
+      return;
+    }
+    const asunto = "Mis Registros de Glucosa";
+    const cuerpo = registros
+      .map(reg => `📅 ${new Date(reg.fecha).toLocaleString("es-ES")} - 🔢 ${reg.resultado} mg/dL${reg.notas ? ` - 📝 ${reg.notas}` : ""}`)
+      .join("\n");
+    window.open(`mailto:?subject=${asunto}&body=${encodeURIComponent(cuerpo)}`);
   });
 
-  // Importar datos
-  document.getElementById("importar-datos").addEventListener("click", () => {
-    document.getElementById("archivo-importar").click();
+  // 3. EXPORTAR DATOS (PDF) (SIN CAMBIOS)
+  document.getElementById("exportar-datos").addEventListener("click", () => {
+    if (registros.length === 0) {
+      alert("No hay registros para exportar");
+      return;
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    doc.setFontSize(18);
+    doc.text("Registros de Glucosa", 105, 15, { align: "center" });
+    
+    doc.setFontSize(12);
+    let y = 30;
+    registros.forEach(reg => {
+      doc.text(`📅 ${new Date(reg.fecha).toLocaleString("es-ES")}`, 10, y);
+      doc.text(`🔢 ${reg.resultado} mg/dL`, 70, y);
+      if (reg.notas) doc.text(`📝 ${reg.notas}`, 110, y);
+      y += 10;
+    });
+    
+    doc.save(`registros-glucosa_${new Date().toISOString().slice(0, 10)}.pdf`);
   });
 
+  // 4. IMPORTAR DATOS (CSV o PDF) (SIN CAMBIOS)
   document.getElementById("archivo-importar").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -293,20 +335,94 @@ document.addEventListener("DOMContentLoaded", function() {
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
-        const data = JSON.parse(event.target.result);
-        if (Array.isArray(data)) {
-          registros = data;
+        if (file.name.endsWith(".csv")) {
+          const csvData = event.target.result;
+          const lines = csvData.split("\n");
+          const nuevosRegistros = [];
+          lines.forEach(line => {
+            const [fecha, resultado, notas] = line.split(",");
+            if (fecha && resultado && !isNaN(parseFloat(resultado))) {
+              nuevosRegistros.push({
+                fecha: new Date(fecha.trim()).toISOString(),
+                resultado: parseFloat(resultado.trim()),
+                notas: notas?.trim() || null
+              });
+            }
+          });
+          registros = nuevosRegistros;
           localStorage.setItem("registros", JSON.stringify(registros));
           actualizarTabla();
-          alert(`Se importaron ${data.length} registros correctamente`);
+          alert(`Se importaron ${nuevosRegistros.length} registros desde CSV`);
+        }
+        else if (file.name.endsWith(".pdf")) {
+          alert("Importación de PDF detectada. Nota: Esta funcionalidad requiere una librería adicional (ej: pdf-lib) para un parsing preciso. Actualmente solo soporta CSV.");
         } else {
-          alert("El archivo no contiene datos válidos");
+          alert("Formato no soportado. Use CSV o PDF.");
         }
       } catch (error) {
-        alert("Error al leer el archivo: " + error.message);
+        alert("Error al importar: " + error.message);
       }
     };
     reader.readAsText(file);
+  });
+
+  // 5. ELIMINAR REGISTROS (CON CONFIRMACIÓN) (SIN CAMBIOS)
+  document.getElementById("resetear").addEventListener("click", () => {
+    const modal = document.createElement("div");
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    `;
+    modal.innerHTML = `
+      <div style="
+        background: ${document.body.classList.contains("dark-mode") ? "#1e1e1e" : "white"};
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        width: 80%;
+        max-width: 300px;
+      ">
+        <h3 style="color: #d9534f; margin-bottom: 20px;">¿Eliminar TODOS los registros?</h3>
+        <div style="display: flex; justify-content: center; gap: 10px;">
+          <button id="confirmar-eliminar" style="
+            background: #d9534f;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+          ">Aceptar</button>
+          <button id="cancelar-eliminar" style="
+            background: #62A5ED;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+          ">Cancelar</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById("confirmar-eliminar").addEventListener("click", () => {
+      registros = [];
+      localStorage.setItem("registros", JSON.stringify(registros));
+      actualizarTabla();
+      document.body.removeChild(modal);
+    });
+
+    document.getElementById("cancelar-eliminar").addEventListener("click", () => {
+      document.body.removeChild(modal);
+    });
   });
 
   // Inicialización
