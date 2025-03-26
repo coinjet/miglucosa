@@ -474,13 +474,13 @@ document.addEventListener("DOMContentLoaded", function() {
   actualizarGrafica();
 
   // =============================================
-  // FUNCIONES GLOBALES (CORRECCIÓN APLICADA AQUÍ)
+  // FUNCIONES GLOBALES (CORRECCIÓN EN editarRegistro)
   // =============================================
   window.editarRegistro = function(index) {
     const registro = registros[index];
     
     // 1. Mostrar valores actuales en los prompts
-    const nuevaFechaHora = prompt("Editar fecha/hora (Ej: 15/03/2023 2:30 PM):", 
+    const nuevaFechaHora = prompt("Editar fecha/hora (Formato: DD/MM/AAAA HH:MM AM/PM):", 
                                 new Date(registro.fecha).toLocaleString("es-ES"));
     const nuevoValor = prompt("Editar nivel de glucosa (mg/dL):", registro.resultado);
     const nuevasNotas = prompt("Editar notas:", registro.notas || "");
@@ -488,24 +488,31 @@ document.addEventListener("DOMContentLoaded", function() {
     // 2. Si el usuario no hizo clic en "Cancelar"
     if (nuevaFechaHora !== null && nuevoValor !== null) {
       try {
-        // Convertir fecha al formato ISO (igual que guardarBtn)
-        const [fecha, hora] = nuevaFechaHora.split(" ");
+        // Convertir formato español a ISO (ej: "15/03/2023 2:30 PM" -> "2023-03-15T14:30:00Z")
+        const [fecha, hora, periodo] = nuevaFechaHora.split(" ");
         const [dia, mes, año] = fecha.split("/");
-        const [horaStr, minutos] = hora.split(":");
+        let [horas, minutos] = hora.split(":");
         
-        const fechaISO = new Date(`${año}-${mes}-${dia}T${horaStr}:${minutos}:00`).toISOString();
+        // Ajuste para formato 24h
+        if (periodo === "PM" && horas !== "12") {
+          horas = String(Number(horas) + 12);
+        } else if (periodo === "AM" && horas === "12") {
+          horas = "00";
+        }
+
+        const fechaISO = new Date(`${año}-${mes}-${dia}T${horas}:${minutos}:00`).toISOString();
 
         // Actualizar registro
         registros[index] = {
           fecha: fechaISO,
-          resultado: parseFloat(nuevoValor) || registro.resultado, // Mantiene valor anterior si es inválido
-          notas: nuevasNotas || registro.notas || null
+          resultado: parseFloat(nuevoValor),
+          notas: nuevasNotas || null
         };
         
         localStorage.setItem("registros", JSON.stringify(registros));
         actualizarTabla();
       } catch (error) {
-        alert("Error: Usa el formato de fecha DD/MM/AAAA HH:MM AM/PM");
+        alert("⚠️ Error: Usa exactamente este formato:\nDD/MM/AAAA HH:MM AM/PM\nEjemplo: 15/03/2023 2:30 PM");
       }
     }
   };
