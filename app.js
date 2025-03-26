@@ -492,6 +492,8 @@ document.addEventListener("DOMContentLoaded", function() {
         hour: '2-digit',
         minute: '2-digit',
         hour12: true
+      }).replace(",", "").replace(" PM", " PM").replace(" AM", " AM"));
+  }
       }), 
       new Date(registro.fecha).toLocaleString("es-ES", {
         day: '2-digit',
