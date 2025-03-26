@@ -326,7 +326,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     try {
       const doc = generarPDF();
-      // 1. Generar y descargar PDF temporalmente (igual que en Exportar)
       const pdfBlob = doc.output("blob");
       const pdfUrl = URL.createObjectURL(pdfBlob);
       const linkDescarga = document.createElement("a");
@@ -336,7 +335,6 @@ document.addEventListener("DOMContentLoaded", function() {
       linkDescarga.click();
       document.body.removeChild(linkDescarga);
       
-      // 2. Abrir cliente de email (sugerir adjuntar el PDF descargado)
       setTimeout(() => {
         window.open("mailto:?subject=Registro%20de%20Glucosa&body=Adjunta%20el%20PDF%20'Registro_Glucosa.pdf'%20que%20se%20acaba%20de%20descargar");
       }, 1000);
@@ -483,10 +481,13 @@ document.addEventListener("DOMContentLoaded", function() {
     const nuevasNotas = prompt("Nuevas notas:", registro.notas || "");
 
     if (nuevaFechaHora && !isNaN(parseFloat(nuevoValor))) {
+      // Convertir la nueva fecha a ISO (como en guardarBtn)
+      const fechaISO = new Date(nuevaFechaHora).toISOString();
+      
       registros[index] = {
-        fecha: new Date(nuevaFechaHora).toISOString(),
+        fecha: fechaISO,
         resultado: parseFloat(nuevoValor),
-        notas: nuevasNotas
+        notas: nuevasNotas || null
       };
       localStorage.setItem("registros", JSON.stringify(registros));
       actualizarTabla();
