@@ -317,7 +317,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  // 2. COMPARTIR POR EMAIL (VERSIÓN CORREGIDA)
+  // 2. COMPARTIR POR EMAIL (VERSIÓN CORREGIDA - DESCARGAR PDF + ABRIR EMAIL)
   document.getElementById("compartir-email").addEventListener("click", async () => {
     if (registros.length === 0) {
       alert("No hay registros para compartir");
@@ -326,17 +326,24 @@ document.addEventListener("DOMContentLoaded", function() {
 
     try {
       const doc = generarPDF();
+      // 1. Generar y descargar PDF temporalmente (igual que en Exportar)
       const pdfBlob = doc.output("blob");
       const pdfUrl = URL.createObjectURL(pdfBlob);
+      const linkDescarga = document.createElement("a");
+      linkDescarga.href = pdfUrl;
+      linkDescarga.download = "Registro_Glucosa.pdf";
+      document.body.appendChild(linkDescarga);
+      linkDescarga.click();
+      document.body.removeChild(linkDescarga);
       
-      // Solución universal para adjuntar PDF en email
-      const link = document.createElement("a");
-      link.href = `mailto:?subject=Registro%20de%20Glucosa&body=Adjunto%20mis%20registros%20de%20glucosa.%0A%0A--%0AApp%20Mi%20Glucosa&attachment=${pdfUrl}`;
-      link.click();
+      // 2. Abrir cliente de email (sugerir adjuntar el PDF descargado)
+      setTimeout(() => {
+        window.open("mailto:?subject=Registro%20de%20Glucosa&body=Adjunta%20el%20PDF%20'Registro_Glucosa.pdf'%20que%20se%20acaba%20de%20descargar");
+      }, 1000);
 
     } catch (error) {
       console.error("Error al compartir:", error);
-      alert("Error al preparar el PDF. Prueba exportarlo manualmente.");
+      alert("Error al generar el PDF. Prueba exportarlo manualmente.");
     }
   });
 
