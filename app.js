@@ -172,12 +172,13 @@ document.addEventListener("DOMContentLoaded", function() {
   function calcularPromedioHbA1c() {
     if (registros.length === 0) {
       promedioHbA1c.textContent = "Tu HbA1c estimado es: —%";
-      return;
+      return "—";
     }
     const suma = registros.reduce((acc, reg) => acc + reg.resultado, 0);
     const promedio = suma / registros.length;
     const hba1c = ((promedio + 46.7) / 28.7).toFixed(2);
     promedioHbA1c.textContent = `Tu HbA1c estimado es: ${hba1c}%`;
+    return hba1c;
   }
 
   function actualizarGrafica() {
@@ -258,20 +259,32 @@ document.addEventListener("DOMContentLoaded", function() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
+    // Título
     doc.setFont("helvetica", "normal");
     doc.setFontSize(14);
     doc.text("REGISTRO DE GLUCOSA", 105, 15, { align: "center" });
     
+    // HbA1c estimado
+    const hba1c = calcularPromedioHbA1c();
+    doc.setFontSize(12);
+    doc.text(`HbA1c estimado: ${hba1c}%`, 105, 25, { align: "center" });
+    
+    // Gráfica como imagen
+    const chartCanvas = document.getElementById("grafica-glucosa");
+    const chartImage = chartCanvas.toDataURL("image/png");
+    doc.addImage(chartImage, 'PNG', 15, 35, 180, 100);
+    
+    // Tabla de registros
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.text("FECHA Y HORA", 25, 30);
-    doc.text("NIVEL (mg/dL)", 80, 30);
-    doc.text("NOTAS", 150, 30);
+    doc.text("FECHA Y HORA", 25, 150);
+    doc.text("NIVEL (mg/dL)", 80, 150);
+    doc.text("NOTAS", 150, 150);
     doc.setDrawColor(0);
-    doc.line(20, 35, 190, 35);
+    doc.line(20, 155, 190, 155);
     
     doc.setFont("helvetica", "normal");
-    let y = 45;
+    let y = 165;
     registros.slice().reverse().forEach(reg => {
       doc.text(new Date(reg.fecha).toLocaleString("es-ES", {
         day: '2-digit',
@@ -316,7 +329,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  // 2. COMPARTIR POR EMAIL (VERSIÓN CORREGIDA Y FUNCIONAL)
+  // 2. COMPARTIR POR EMAIL
   document.getElementById("compartir-email").addEventListener("click", function() {
     if (registros.length === 0) {
       alert("No hay registros para compartir");
@@ -347,7 +360,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  // 3. EXPORTAR DATOS
+  // 3. EXPORTAR DATOS (AHORA INCLUYE GRÁFICA + HbA1c)
   document.getElementById("exportar-datos").addEventListener("click", () => {
     if (registros.length === 0) {
       alert("No hay registros para exportar");
