@@ -254,7 +254,6 @@ document.addEventListener("DOMContentLoaded", function() {
   // =============================================
   // BOTONES INFERIORES
   // =============================================
-
   const generarPDF = () => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -474,45 +473,54 @@ document.addEventListener("DOMContentLoaded", function() {
   actualizarGrafica();
 
   // =============================================
-  // FUNCIONES GLOBALES (CORRECCIÓN EN editarRegistro)
+  // FUNCIONES GLOBALES (SOLO SE REEMPLAZA editarRegistro)
   // =============================================
   window.editarRegistro = function(index) {
     const registro = registros[index];
     
-    // 1. Mostrar valores actuales en los prompts
-    const nuevaFechaHora = prompt("Editar fecha/hora (Formato: DD/MM/AAAA HH:MM AM/PM):", 
-                                new Date(registro.fecha).toLocaleString("es-ES"));
-    const nuevoValor = prompt("Editar nivel de glucosa (mg/dL):", registro.resultado);
-    const nuevasNotas = prompt("Editar notas:", registro.notas || "");
+    // 1. Prompt con ejemplo integrado
+    const nuevaFechaHora = prompt(
+      "Editar fecha/hora (Formato exacto: DD/MM/AAAA HH:MM AM/PM)\nEjemplo: 25/03/2025 10:30 PM", 
+      new Date(registro.fecha).toLocaleString("es-ES", {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
+    );
 
-    // 2. Si el usuario no hizo clic en "Cancelar"
+    const nuevoValor = prompt("Nivel de glucosa (mg/dL):", registro.resultado);
+    const nuevasNotas = prompt("Notas:", registro.notas || "");
+
+    // 2. Validación y procesamiento
     if (nuevaFechaHora !== null && nuevoValor !== null) {
       try {
-        // Convertir formato español a ISO (ej: "15/03/2023 2:30 PM" -> "2023-03-15T14:30:00Z")
+        // Parseo preciso del formato español
         const [fecha, hora, periodo] = nuevaFechaHora.split(" ");
         const [dia, mes, año] = fecha.split("/");
         let [horas, minutos] = hora.split(":");
-        
-        // Ajuste para formato 24h
-        if (periodo === "PM" && horas !== "12") {
-          horas = String(Number(horas) + 12);
-        } else if (periodo === "AM" && horas === "12") {
-          horas = "00";
-        }
 
-        const fechaISO = new Date(`${año}-${mes}-${dia}T${horas}:${minutos}:00`).toISOString();
+        // Conversión AM/PM a 24h
+        if (periodo === "PM" && horas !== "12") horas = String(Number(horas) + 12);
+        if (periodo === "AM" && horas === "12") horas = "00";
 
-        // Actualizar registro
+        // Validación adicional de fecha
+        const fechaISO = new Date(`${año}-${mes}-${dia}T${horas}:${minutos}:00`);
+        if (isNaN(fechaISO.getTime())) throw new Error("Fecha inválida");
+
+        // Actualización segura
         registros[index] = {
-          fecha: fechaISO,
-          resultado: parseFloat(nuevoValor),
+          fecha: fechaISO.toISOString(),
+          resultado: parseFloat(nuevoValor) || registro.resultado,
           notas: nuevasNotas || null
         };
-        
+
         localStorage.setItem("registros", JSON.stringify(registros));
         actualizarTabla();
       } catch (error) {
-        alert("⚠️ Error: Usa exactamente este formato:\nDD/MM/AAAA HH:MM AM/PM\nEjemplo: 15/03/2023 2:30 PM");
+        alert("❌ Error: Usa este formato exacto:\nDD/MM/AAAA HH:MM AM/PM\nEjemplo: 25/03/2025 10:30 PM");
       }
     }
   };
