@@ -252,9 +252,8 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // =============================================
-  // BOTONES INFERIORES (VERSIÓN FINAL CORREGIDA)
+  // BOTONES INFERIORES
   // =============================================
-
   const generarPDF = () => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -317,7 +316,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  // 2. COMPARTIR POR EMAIL (VERSIÓN CORREGIDA - DESCARGAR PDF + ABRIR EMAIL)
+  // 2. COMPARTIR POR EMAIL
   document.getElementById("compartir-email").addEventListener("click", async () => {
     if (registros.length === 0) {
       alert("No hay registros para compartir");
@@ -473,24 +472,31 @@ document.addEventListener("DOMContentLoaded", function() {
   mesSeleccionado.value = (new Date().getMonth() + 1).toString().padStart(2, "0");
   actualizarGrafica();
 
-  // Funciones globales
+  // =============================================
+  // FUNCIONES GLOBALES (CORRECCIÓN APLICADA AQUÍ)
+  // =============================================
   window.editarRegistro = function(index) {
     const registro = registros[index];
+    
     const nuevaFechaHora = prompt("Nueva fecha/hora:", new Date(registro.fecha).toLocaleString("es-ES"));
     const nuevoValor = prompt("Nuevo nivel de glucosa:", registro.resultado);
     const nuevasNotas = prompt("Nuevas notas:", registro.notas || "");
 
     if (nuevaFechaHora && !isNaN(parseFloat(nuevoValor))) {
-      // Convertir la nueva fecha a ISO (como en guardarBtn)
-      const fechaISO = new Date(nuevaFechaHora).toISOString();
+      const fechaEditada = new Date(nuevaFechaHora);
       
-      registros[index] = {
-        fecha: fechaISO,
-        resultado: parseFloat(nuevoValor),
-        notas: nuevasNotas || null
-      };
-      localStorage.setItem("registros", JSON.stringify(registros));
-      actualizarTabla();
+      if (!isNaN(fechaEditada.getTime())) {
+        registros[index] = {
+          fecha: fechaEditada.toISOString(), // Conversión clave a ISO
+          resultado: parseFloat(nuevoValor),
+          notas: nuevasNotas || null
+        };
+        
+        localStorage.setItem("registros", JSON.stringify(registros));
+        actualizarTabla();
+      } else {
+        alert("¡Formato de fecha inválido! Ejemplo: 15/03/2023 8:30 AM");
+      }
     }
   };
 
