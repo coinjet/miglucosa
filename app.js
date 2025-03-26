@@ -492,7 +492,7 @@ document.addEventListener("DOMContentLoaded", function() {
         hour: '2-digit',
         minute: '2-digit',
         hour12: true
-      }), 
+      }).replace(",", "").replace(" PM", " p. m.").replace(" AM", " a. m."), 
       new Date(registro.fecha).toLocaleString("es-ES", {
         day: '2-digit',
         month: '2-digit',
@@ -500,7 +500,7 @@ document.addEventListener("DOMContentLoaded", function() {
         hour: '2-digit',
         minute: '2-digit',
         hour12: true
-      })
+      }).replace(",", "").replace(" PM", " p. m.").replace(" AM", " a. m.")
     );
 
     const nuevoValor = prompt("Nivel de glucosa (mg/dL):", registro.resultado);
@@ -509,8 +509,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // Validación y procesamiento
     if (nuevaFechaHora !== null && nuevoValor !== null) {
       try {
-        // Parseo preciso del formato español
-        const [fecha, hora, periodo] = nuevaFechaHora.split(" ");
+        // Parseo preciso del formato español (ahora acepta "p. m." y "a. m.")
+        const [fecha, hora, periodo] = nuevaFechaHora.replace(" a. m.", " AM").replace(" p. m.", " PM").split(" ");
         const [dia, mes, año] = fecha.split("/");
         let [horas, minutos] = hora.split(":");
 
@@ -540,7 +540,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: true
-              }));
+              }).replace(",", "").replace(" PM", " p. m.").replace(" AM", " a. m."));
       }
     }
   };
