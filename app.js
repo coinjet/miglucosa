@@ -316,7 +316,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  // 2. COMPARTIR POR EMAIL
+  // 2. COMPARTIR POR EMAIL (VERSIÓN CORREGIDA)
   document.getElementById("compartir-email").addEventListener("click", async () => {
     if (registros.length === 0) {
       alert("No hay registros para compartir");
@@ -327,17 +327,19 @@ document.addEventListener("DOMContentLoaded", function() {
       const doc = generarPDF();
       const pdfBlob = doc.output("blob");
       const pdfUrl = URL.createObjectURL(pdfBlob);
-      const linkDescarga = document.createElement("a");
-      linkDescarga.href = pdfUrl;
-      linkDescarga.download = "Registro_Glucosa.pdf";
-      document.body.appendChild(linkDescarga);
-      linkDescarga.click();
-      document.body.removeChild(linkDescarga);
       
-      setTimeout(() => {
-        window.open("mailto:?subject=Registro%20de%20Glucosa&body=Adjunta%20el%20PDF%20'Registro_Glucosa.pdf'%20que%20se%20acaba%20de%20descargar");
-      }, 1000);
-
+      // Crear enlace temporal para descarga
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = "Registro_Glucosa.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Abrir cliente de email con datos prellenados
+      const emailBody = "Adjunto encontrarás mi registro de glucosa en PDF.";
+      window.open(`mailto:?subject=Registro%20de%20Glucosa&body=${encodeURIComponent(emailBody)}`);
+      
     } catch (error) {
       console.error("Error al compartir:", error);
       alert("Error al generar el PDF. Prueba exportarlo manualmente.");
