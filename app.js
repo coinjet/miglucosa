@@ -254,6 +254,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // =============================================
   // BOTONES INFERIORES
   // =============================================
+
   const generarPDF = () => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -473,30 +474,36 @@ document.addEventListener("DOMContentLoaded", function() {
   actualizarGrafica();
 
   // =============================================
-  // FUNCIONES GLOBALES (CORRECCIÓN APLICADA AQUÍ)
+  // FUNCIONES GLOBALES (CORRECCIÓN EN editarRegistro)
   // =============================================
   window.editarRegistro = function(index) {
     const registro = registros[index];
     
+    // 1. Pedir datos editados (conserva el formato visual)
     const nuevaFechaHora = prompt("Nueva fecha/hora:", new Date(registro.fecha).toLocaleString("es-ES"));
     const nuevoValor = prompt("Nuevo nivel de glucosa:", registro.resultado);
     const nuevasNotas = prompt("Nuevas notas:", registro.notas || "");
 
+    // 2. Validar y actualizar
     if (nuevaFechaHora && !isNaN(parseFloat(nuevoValor))) {
-      const fechaEditada = new Date(nuevaFechaHora);
+      // Parseo de fecha en formato español (ej: "15/03/2023 8:30 AM")
+      const [fecha, hora] = nuevaFechaHora.split(" ");
+      const [dia, mes, año] = fecha.split("/");
+      const [horaStr, minutos] = hora.split(":");
       
-      if (!isNaN(fechaEditada.getTime())) {
-        registros[index] = {
-          fecha: fechaEditada.toISOString(), // Conversión clave a ISO
-          resultado: parseFloat(nuevoValor),
-          notas: nuevasNotas || null
-        };
-        
-        localStorage.setItem("registros", JSON.stringify(registros));
-        actualizarTabla();
-      } else {
-        alert("¡Formato de fecha inválido! Ejemplo: 15/03/2023 8:30 AM");
-      }
+      const fechaEditada = new Date(
+        `${año}-${mes}-${dia}T${horaStr}:${minutos}:00`
+      );
+
+      // Actualizar registro
+      registros[index] = {
+        fecha: fechaEditada.toISOString(), // Mismo formato que guardarBtn
+        resultado: parseFloat(nuevoValor),
+        notas: nuevasNotas || null
+      };
+      
+      localStorage.setItem("registros", JSON.stringify(registros));
+      actualizarTabla();
     }
   };
 
