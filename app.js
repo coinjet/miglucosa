@@ -474,36 +474,39 @@ document.addEventListener("DOMContentLoaded", function() {
   actualizarGrafica();
 
   // =============================================
-  // FUNCIONES GLOBALES (CORRECCIÓN EN editarRegistro)
+  // FUNCIONES GLOBALES (CORRECCIÓN APLICADA AQUÍ)
   // =============================================
   window.editarRegistro = function(index) {
     const registro = registros[index];
     
-    // 1. Pedir datos editados (conserva el formato visual)
-    const nuevaFechaHora = prompt("Nueva fecha/hora:", new Date(registro.fecha).toLocaleString("es-ES"));
-    const nuevoValor = prompt("Nuevo nivel de glucosa:", registro.resultado);
-    const nuevasNotas = prompt("Nuevas notas:", registro.notas || "");
+    // 1. Mostrar valores actuales en los prompts
+    const nuevaFechaHora = prompt("Editar fecha/hora (Ej: 15/03/2023 2:30 PM):", 
+                                new Date(registro.fecha).toLocaleString("es-ES"));
+    const nuevoValor = prompt("Editar nivel de glucosa (mg/dL):", registro.resultado);
+    const nuevasNotas = prompt("Editar notas:", registro.notas || "");
 
-    // 2. Validar y actualizar
-    if (nuevaFechaHora && !isNaN(parseFloat(nuevoValor))) {
-      // Parseo de fecha en formato español (ej: "15/03/2023 8:30 AM")
-      const [fecha, hora] = nuevaFechaHora.split(" ");
-      const [dia, mes, año] = fecha.split("/");
-      const [horaStr, minutos] = hora.split(":");
-      
-      const fechaEditada = new Date(
-        `${año}-${mes}-${dia}T${horaStr}:${minutos}:00`
-      );
+    // 2. Si el usuario no hizo clic en "Cancelar"
+    if (nuevaFechaHora !== null && nuevoValor !== null) {
+      try {
+        // Convertir fecha al formato ISO (igual que guardarBtn)
+        const [fecha, hora] = nuevaFechaHora.split(" ");
+        const [dia, mes, año] = fecha.split("/");
+        const [horaStr, minutos] = hora.split(":");
+        
+        const fechaISO = new Date(`${año}-${mes}-${dia}T${horaStr}:${minutos}:00`).toISOString();
 
-      // Actualizar registro
-      registros[index] = {
-        fecha: fechaEditada.toISOString(), // Mismo formato que guardarBtn
-        resultado: parseFloat(nuevoValor),
-        notas: nuevasNotas || null
-      };
-      
-      localStorage.setItem("registros", JSON.stringify(registros));
-      actualizarTabla();
+        // Actualizar registro
+        registros[index] = {
+          fecha: fechaISO,
+          resultado: parseFloat(nuevoValor) || registro.resultado, // Mantiene valor anterior si es inválido
+          notas: nuevasNotas || registro.notas || null
+        };
+        
+        localStorage.setItem("registros", JSON.stringify(registros));
+        actualizarTabla();
+      } catch (error) {
+        alert("Error: Usa el formato de fecha DD/MM/AAAA HH:MM AM/PM");
+      }
     }
   };
 
