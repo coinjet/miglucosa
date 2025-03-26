@@ -317,7 +317,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  // 2. COMPARTIR POR EMAIL (VERSIÓN DEFINITIVA)
+  // 2. COMPARTIR POR EMAIL (VERSIÓN CORREGIDA)
   document.getElementById("compartir-email").addEventListener("click", async () => {
     if (registros.length === 0) {
       alert("No hay registros para compartir");
@@ -326,39 +326,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
     try {
       const doc = generarPDF();
-      // Generar PDF como Blob (método más confiable)
       const pdfBlob = doc.output("blob");
-      const pdfFile = new File([pdfBlob], "Registro_Glucosa.pdf", {
-        type: "application/pdf"
-      });
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      
+      // Solución universal para adjuntar PDF en email
+      const link = document.createElement("a");
+      link.href = `mailto:?subject=Registro%20de%20Glucosa&body=Adjunto%20mis%20registros%20de%20glucosa.%0A%0A--%0AApp%20Mi%20Glucosa&attachment=${pdfUrl}`;
+      link.click();
 
-      // Solución para PWAs (Android/iOS)
-      if (navigator.share && navigator.canShare?.({ files: [pdfFile] })) {
-        await navigator.share({
-          title: "Registro de Glucosa",
-          text: "Adjunto mis registros de glucosa",
-          files: [pdfFile]
-        });
-      } 
-      // Fallback universal
-      else {
-        // Descargar primero el PDF
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.download = "Registro_Glucosa.pdf";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Abrir cliente de correo
-        setTimeout(() => {
-          window.open("mailto:?subject=Registro%20de%20Glucosa&body=Por%20favor%20adjunta%20el%20PDF%20descargado");
-        }, 500);
-      }
     } catch (error) {
       console.error("Error al compartir:", error);
-      alert("Descarga el PDF y adjúntalo manualmente desde tu app de correo.");
+      alert("Error al preparar el PDF. Prueba exportarlo manualmente.");
     }
   });
 
