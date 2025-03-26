@@ -473,14 +473,26 @@ document.addEventListener("DOMContentLoaded", function() {
   actualizarGrafica();
 
   // =============================================
-  // FUNCIONES GLOBALES (SOLO SE REEMPLAZA editarRegistro)
+  // FUNCIONES GLOBALES (VERSIÓN FINAL CORREGIDA)
   // =============================================
   window.editarRegistro = function(index) {
     const registro = registros[index];
     
-    // 1. Prompt con ejemplo integrado
+    // Obtener fecha actual del smartphone en formato local
+    const fechaEjemplo = new Date();
+    fechaEjemplo.setMinutes(fechaEjemplo.getMinutes() + 5); // +5 mins para evitar hora pasada
+    
+    // Prompt con ejemplo actualizado
     const nuevaFechaHora = prompt(
-      "Editar fecha/hora (Formato exacto: DD/MM/AAAA HH:MM AM/PM)\nEjemplo: 25/03/2025 10:30 PM", 
+      "Editar fecha/hora (Formato exacto: DD/MM/AAAA HH:MM AM/PM)\nEjemplo: " + 
+      fechaEjemplo.toLocaleString("es-ES", {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }), 
       new Date(registro.fecha).toLocaleString("es-ES", {
         day: '2-digit',
         month: '2-digit',
@@ -494,7 +506,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const nuevoValor = prompt("Nivel de glucosa (mg/dL):", registro.resultado);
     const nuevasNotas = prompt("Notas:", registro.notas || "");
 
-    // 2. Validación y procesamiento
+    // Validación y procesamiento
     if (nuevaFechaHora !== null && nuevoValor !== null) {
       try {
         // Parseo preciso del formato español
@@ -502,17 +514,17 @@ document.addEventListener("DOMContentLoaded", function() {
         const [dia, mes, año] = fecha.split("/");
         let [horas, minutos] = hora.split(":");
 
-        // Conversión AM/PM a 24h
+        // Conversión AM/PM a 24h sincronizada con smartphone
         if (periodo === "PM" && horas !== "12") horas = String(Number(horas) + 12);
         if (periodo === "AM" && horas === "12") horas = "00";
 
         // Validación adicional de fecha
-        const fechaISO = new Date(`${año}-${mes}-${dia}T${horas}:${minutos}:00`);
-        if (isNaN(fechaISO.getTime())) throw new Error("Fecha inválida");
+        const fechaObj = new Date(`${año}-${mes}-${dia}T${horas}:${minutos}:00`);
+        if (isNaN(fechaObj.getTime())) throw new Error("Fecha inválida");
 
-        // Actualización segura
+        // Actualización segura (conserva zona horaria local)
         registros[index] = {
-          fecha: fechaISO.toISOString(),
+          fecha: fechaObj.toISOString(),
           resultado: parseFloat(nuevoValor) || registro.resultado,
           notas: nuevasNotas || null
         };
@@ -520,7 +532,15 @@ document.addEventListener("DOMContentLoaded", function() {
         localStorage.setItem("registros", JSON.stringify(registros));
         actualizarTabla();
       } catch (error) {
-        alert("❌ Error: Usa este formato exacto:\nDD/MM/AAAA HH:MM AM/PM\nEjemplo: 25/03/2025 10:30 PM");
+        alert("❌ Error: Usa este formato exacto:\nDD/MM/AAAA HH:MM AM/PM\nEjemplo: " + 
+              new Date().toLocaleString("es-ES", {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+              }));
       }
     }
   };
